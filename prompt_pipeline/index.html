@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Pipeline Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #F5F3FF;
+  color: #1e1b2e;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+code, pre, .json-block {
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* ========== HERO ========== */
+.hero {
+  background: linear-gradient(135deg, #FF6B6B 0%, #6C63FF 100%);
+  padding: 48px 24px 40px;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -60%; left: -20%;
+  width: 140%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.hero p {
+  font-size: 1.05rem;
+  font-weight: 400;
+  opacity: 0.9;
+  position: relative;
+  z-index: 1;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ========== CONTAINER ========== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+
+/* ========== SECTION HEADERS ========== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.section-header h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2d2843;
+}
+.section-header .step-badge {
+  background: #6C63FF;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* ========== TASK SELECTOR ========== */
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.task-card {
+  background: #fff;
+  border-radius: 14px;
+  border-top: 4px solid #ccc;
+  padding: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(108,99,255,0.06);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  position: relative;
+}
+.task-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 8px 24px rgba(108,99,255,0.13);
+}
+.task-card.selected {
+  border-top-color: #6C63FF !important;
+  box-shadow: 0 0 0 2px #6C63FF, 0 8px 24px rgba(108,99,255,0.15);
+}
+.task-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #1e1b2e;
+}
+.task-card .io-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.task-card .io-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: #F0EEFF;
+  color: #6C63FF;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.task-card .io-tag.out {
+  background: #E8F8F4;
+  color: #00A98A;
+}
+.task-card .desc {
+  font-size: 0.82rem;
+  color: #5a5570;
+  margin-top: 2px;
+}
+/* Card colour tops */
+.task-card[data-color="0"] { border-top-color: #FF6B6B; }
+.task-card[data-color="1"] { border-top-color: #00C9A7; }
+.task-card[data-color="2"] { border-top-color: #6C63FF; }
+.task-card[data-color="3"] { border-top-color: #FFB347; }
+.task-card[data-color="4"] { border-top-color: #FF6B6B; }
+.task-card[data-color="5"] { border-top-color: #00C9A7; }
+
+/* ========== PIPELINE BUILDER ========== */
+.pipeline-section { margin-bottom: 40px; }
+.pipeline-scroll {
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  min-width: 640px;
+  position: relative;
+}
+/* Arrow connector */
+.stage-connector {
+  flex-shrink: 0;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.stage-connector svg {
+  width: 48px;
+  height: 24px;
+}
+.stage-connector .arrow-line {
+  stroke-dasharray: 6 4;
+  stroke-width: 2.5;
+  fill: none;
+  animation: dashMove 0.8s linear infinite;
+}
+@keyframes dashMove {
+  to { stroke-dashoffset: -20; }
+}
+.stage-connector .arrow-head { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.stage-node {
+  flex: 1;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(108,99,255,0.06);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  position: relative;
+}
+.stage-node.processing {
+  animation: pulseGlow 1.2s ease-in-out infinite;
+  box-shadow: 0 0 0 3px var(--stage-color), 0 8px 24px rgba(108,99,255,0.15);
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 3px var(--stage-color), 0 4px 16px rgba(108,99,255,0.08); }
+  50% { box-shadow: 0 0 0 6px var(--stage-color), 0 8px 32px rgba(108,99,255,0.18); }
+}
+.stage-node.done {
+  box-shadow: 0 0 0 2px #22c55e, 0 4px 16px rgba(34,197,94,0.12);
+}
+.stage-node.error {
+  box-shadow: 0 0 0 2px #ef4444, 0 4px 16px rgba(239,68,68,0.12);
+}
+.stage-node .stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.stage-node .stage-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: var(--stage-color, #6C63FF);
+  text-transform: uppercase;
+}
+.stage-node .stage-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+  background: var(--badge-bg, #F0EEFF);
+  color: var(--badge-color, #6C63FF);
+}
+.stage-node textarea {
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e0f0;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  resize: vertical;
+  transition: border-color 0.2s;
+  background: #FBF9FF;
+  color: #1e1b2e;
+}
+.stage-node textarea:focus {
+  outline: none;
+  border-color: var(--stage-color, #6C63FF);
+  background: #fff;
+}
+.stage-node .io-previews {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.stage-node .io-box {
+  flex: 1;
+  background: #F8F6FE;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.65rem;
+}
+.stage-node .io-box .label {
+  font-weight: 600;
+  color: #5a5570;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+  font-size: 0.6rem;
+}
+.stage-node .io-box .json-block {
+  color: #2d2843;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 0.6rem;
+  line-height: 1.45;
+}
+
+/* Pipeline stage colours */
+.stage-node[data-stage="0"] { --stage-color: #FF6B6B; --badge-bg: #FFF0EE; --badge-color: #d94f4f; }
+.stage-node[data-stage="1"] { --stage-color: #00C9A7; --badge-bg: #E8F8F4; --badge-color: #009e85; }
+.stage-node[data-stage="2"] { --stage-color: #6C63FF; --badge-bg: #F0EEFF; --badge-color: #5a52d4; }
+.stage-node[data-stage="3"] { --stage-color: #FFB347; --badge-bg: #FFF6EB; --badge-color: #d48f30; }
+
+/* ========== LIVE RUN PANEL ========== */
+.run-panel {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(108,99,255,0.06);
+  margin-bottom: 40px;
+}
+.run-panel .run-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.run-panel .run-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.run-panel .broken-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #5a5570;
+  cursor: pointer;
+}
+.run-panel .broken-toggle input[type="checkbox"] {
+  accent-color: #FF6B6B;
+  width: 16px; height: 16px;
+  cursor: pointer;
+}
+.btn-run {
+  background: linear-gradient(135deg, #6C63FF, #FF6B6B);
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 40px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-run:hover { transform: scale(1.03); box-shadow: 0 6px 20px rgba(108,99,255,0.3); }
+.btn-run:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-run .spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.btn-run.loading .spinner { display: inline-block; }
+.btn-run.loading .btn-text { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Run output cards */
+.run-outputs { margin-top: 16px; }
+.run-stage-card {
+  background: #F8F6FE;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  border-left: 4px solid var(--stage-color, #6C63FF);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.run-stage-card.visible { opacity: 1; transform: translateY(0); }
+.run-stage-card[data-stage="0"] { --stage-color: #FF6B6B; }
+.run-stage-card[data-stage="1"] { --stage-color: #00C9A7; }
+.run-stage-card[data-stage="2"] { --stage-color: #6C63FF; }
+.run-stage-card[data-stage="3"] { --stage-color: #FFB347; }
+
+.run-stage-card .rc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  gap: 8px;
+}
+.run-stage-card .rc-header .rc-label {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--stage-color, #6C63FF);
+}
+.run-stage-card .rc-header .rc-status {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.rc-status.success { background: #dcfce7; color: #15803d; }
+.rc-status.error { background: #fef2f2; color: #b91c1c; }
+.rc-status.running { background: #eef2ff; color: #4338ca; }
+.run-stage-card .rc-body {
+  padding: 0 16px 14px;
+  display: none;
+}
+.run-stage-card .rc-body.open { display: block; }
+.run-stage-card .rc-body .rc-io {
+  margin-bottom: 8px;
+}
+.run-stage-card .rc-body .rc-io .rc-io-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #5a5570;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+.run-stage-card .rc-body .rc-io pre {
+  background: #1e1b2e;
+  color: #e5e0f0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+/* ========== REFLECTION BOX ========== */
+.reflection-box {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(108,99,255,0.06);
+}
+.reflection-box textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px;
+  border: 1.5px solid #e5e0f0;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  resize: vertical;
+  transition: border-color 0.2s;
+  background: #FBF9FF;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+.reflection-box textarea:focus {
+  outline: none;
+  border-color: #6C63FF;
+  background: #fff;
+}
+.reflection-box .refl-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.reflection-box .refl-saved {
+  font-size: 0.78rem;
+  color: #15803d;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.reflection-box .refl-saved.show { opacity: 1; }
+.btn-save {
+  background: #6C63FF;
+  color: #fff;
+  border: none;
+  padding: 8px 22px;
+  border-radius: 30px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-save:hover { transform: scale(1.04); box-shadow: 0 4px 14px rgba(108,99,255,0.3); }
+
+/* ========== LOADING SHIMMER ========== */
+.shimmer {
+  background: linear-gradient(90deg, #f0ecfe 25%, #f8f6fe 50%, #f0ecfe 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  display: inline-block;
+  height: 14px;
+  width: 80%;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.8rem; }
+  .hero p { font-size: 0.92rem; }
+  .task-grid { grid-template-columns: 1fr; }
+  .pipeline { flex-direction: column; align-items: stretch; gap: 0; min-width: unset; }
+  .stage-node { min-width: unset; }
+  .stage-connector { width: 100%; height: 32px; transform: rotate(90deg); }
+  .stage-connector svg { width: 32px; height: 32px; }
+  .run-panel .run-top { flex-direction: column; align-items: stretch; }
+  .io-previews { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<header class="hero">
+  <h1>🔗 Prompt Pipeline Builder</h1>
+  <p>Design multi-stage LLM prompt chains. Pick a task, craft prompts for each stage, and run the live pipeline.</p>
+</header>
+
+<div class="container">
+
+  <!-- ========== TASK SELECTOR ========== -->
+  <section id="taskSelector">
+    <div class="section-header">
+      <span class="step-badge">STEP 1</span>
+      <h2>Choose a Task</h2>
+    </div>
+    <div class="task-grid" id="taskGrid"></div>
+  </section>
+
+  <!-- ========== PIPELINE BUILDER ========== -->
+  <section id="pipelineSection" class="pipeline-section" style="display:none;">
+    <div class="section-header">
+      <span class="step-badge">STEP 2</span>
+      <h2>Build Your Pipeline</h2>
+    </div>
+    <div class="pipeline-scroll">
+      <div class="pipeline" id="pipelineContainer"></div>
+    </div>
+  </section>
+
+  <!-- ========== LIVE RUN PANEL ========== -->
+  <section id="runPanel" class="run-panel" style="display:none;">
+    <div class="run-top">
+      <div style="font-weight:700;font-size:1.05rem;">▶ Live Run</div>
+      <div class="run-cta">
+        <label class="broken-toggle">
+          <input type="checkbox" id="brokenToggle">
+          🧪 Test with bad input
+        </label>
+        <button class="btn-run" id="runBtn">
+          <span class="spinner"></span>
+          <span class="btn-text">🚀 Run Pipeline</span>
+        </button>
+      </div>
+    </div>
+    <div class="run-outputs" id="runOutputs"></div>
+  </section>
+
+  <!-- ========== REFLECTION BOX ========== -->
+  <section class="reflection-box">
+    <div style="font-weight:700;font-size:1.05rem;margin-bottom:4px;">💭 Which stage is your weakest link?</div>
+    <p style="font-size:0.82rem;color:#5a5570;margin-bottom:4px;">Reflect on your prompt chain — where do errors creep in?</p>
+    <textarea id="reflectionText" placeholder="e.g. Stage 2 often has vague instructions that confuse the model..."></textarea>
+    <div class="refl-bottom">
+      <span class="refl-saved" id="reflSaved">✓ Saved!</span>
+      <button class="btn-save" id="saveReflectionBtn">Save Reflection</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ==============================================================
+   callLLM(prompt, stageIndex)
+   — Placeholder async function that simulates an LLM call.
+   💡 Replace the body with a real OpenRouter / OpenAI call:
+       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+         method: 'POST',
+         headers: { 'Authorization': 'Bearer YOUR_KEY', 'Content-Type': 'application/json' },
+         body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{role:'user',content:prompt}] })
+       });
+       const data = await res.json();
+       return data.choices[0].message.content;
+   ============================================================== */
+  async function callLLM(prompt, stageIndex) {
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Simulate realistic stage-specific output based on the prompt content
+    const lower = prompt.toLowerCase();
+
+    // Detect task context from global state
+    const task = state.tasks.find(t => t.id === state.selectedTask);
+    const taskName = task ? task.name.toLowerCase() : '';
+
+    const mockResponses = [
+      // Stage 0 – Understand / Extract
+      {
+        success: () => {
+          if (taskName.includes('support')) return JSON.stringify({ issue: 'Account login failure', priority: 'high', customer_tier: 'premium', sentiment: 'frustrated' }, null, 2);
+          if (taskName.includes('essay')) return JSON.stringify({ rubric_dimensions: ['thesis', 'evidence', 'structure', 'grammar'], word_count: 850, topic: 'Climate change policy' }, null, 2);
+          if (taskName.includes('bug')) return JSON.stringify({ severity: 'critical', component: 'authentication', reproducible: true, logs_available: true }, null, 2);
+          if (taskName.includes('meeting')) return JSON.stringify({ attendees: 6, duration_min: 45, topics: ['Q3 roadmap', 'budget review'], decisions_made: 3 }, null, 2);
+          if (taskName.includes('recipe')) return JSON.stringify({ original_servings: 4, target_servings: 6, dietary_restrictions: ['gluten-free'], cuisine: 'Italian' }, null, 2);
+          return JSON.stringify({ entities_extracted: ['user', 'transaction', 'location'], confidence: 0.92 }, null, 2);
+        },
+        error: () => JSON.stringify({ error: 'Missing required field: input_text', code: 'PARSE_ERROR' }, null, 2)
+      },
+      // Stage 1 – Reason / Analyze
+      {
+        success: () => {
+          if (taskName.includes('support')) return JSON.stringify({ root_cause: 'Expired API token', impact: 'Cannot access dashboard', suggested_action: 'Regenerate token', escalation_required: false }, null, 2);
+          if (taskName.includes('essay')) return JSON.stringify({ thesis_score: 7, evidence_score: 6, structure_score: 8, grammar_score: 5, overall: 'B', feedback: 'Strengthen evidence with specific citations' }, null, 2);
+          if (taskName.includes('bug')) return JSON.stringify({ likely_cause: 'Token expiry not handled', affected_users: '~15%', recommended_fix: 'Add refresh logic', complexity: 'medium' }, null, 2);
+          if (taskName.includes('meeting')) return JSON.stringify({ action_items: ['Review Q3 budget', 'Schedule design sprint'], owners: ['Alice', 'Bob'], deadlines: ['2026-07-15', '2026-07-20'] }, null, 2);
+          if (taskName.includes('recipe')) return JSON.stringify({ adjusted_ingredients: { flour: '2 cups', eggs: 3, milk: '1.5 cups' }, substitutions: { flour: 'almond flour' }, notes: 'Add 5 min to bake time' }, null, 2);
+          return JSON.stringify({ reasoning: 'Input indicates a high-priority request requiring immediate attention', confidence: 0.87 }, null, 2);
+        },
+        error: () => JSON.stringify({ error: 'Analysis failed: unexpected token in input', code: 'ANALYSIS_FAILURE' }, null, 2)
+      },
+      // Stage 2 – Produce / Generate
+      {
+        success: () => {
+          if (taskName.includes('support')) return JSON.stringify({ response: 'Hi, we detected your API token expired. Please regenerate it in your dashboard settings.', tone: 'empathetic', follow_up_required: false }, null, 2);
+          if (taskName.includes('essay')) return JSON.stringify({ revised_essay: 'This essay presents a compelling thesis on climate policy... [revised]', changes_made: ['Added citations', 'Restructured paragraph 3'], word_count: 920 }, null, 2);
+          if (taskName.includes('bug')) return JSON.stringify({ patch_summary: 'Add automatic token refresh in auth middleware', files_changed: ['auth.js', 'config.js'], risk_level: 'low' }, null, 2);
+          if (taskName.includes('meeting')) return JSON.stringify({ summary: 'The team reviewed Q3 priorities and agreed on budget reallocation.', action_plan: 'Alice will draft budget by July 15.', next_meeting: '2026-07-22' }, null, 2);
+          if (taskName.includes('recipe')) return JSON.stringify({ adapted_recipe: 'Preheat oven to 350°F. Mix dry ingredients... [adapted for 6 servings]', prep_time_min: 20, cook_time_min: 35, difficulty: 'medium' }, null, 2);
+          return JSON.stringify({ output_generated: 'Based on the analysis, here is the recommended action plan...', format: 'markdown', sections: 4 }, null, 2);
+        },
+        error: () => JSON.stringify({ error: 'Generation failed: context length exceeded', code: 'CONTEXT_OVERFLOW', partial_output: '...' }, null, 2)
+      },
+      // Stage 3 – Critique / Review
+      {
+        success: () => {
+          if (taskName.includes('support')) return JSON.stringify({ critique: 'Response is clear but could include a direct link to the dashboard.', score: 4, suggestions: ['Add reset link', 'Offer phone support option'], final_verdict: 'approved' }, null, 2);
+          if (taskName.includes('essay')) return JSON.stringify({ critique: 'Grammar improved but thesis needs sharper framing.', scores: { clarity: 7, depth: 6, mechanics: 8 }, final_grade: 'B+', recommendation: 'Minor revisions' }, null, 2);
+          if (taskName.includes('bug')) return JSON.stringify({ review: 'Fix looks correct. Consider adding unit tests.', code_quality: 'good', potential_issues: ['Edge case: null token'], approval: 'approved' }, null, 2);
+          if (taskName.includes('meeting')) return JSON.stringify({ review: 'Summary captures all key decisions. Action plan is clear.', missing_items: ['Budget figures'], completeness: 0.9, status: 'ready' }, null, 2);
+          if (taskName.includes('recipe')) return JSON.stringify({ critique: 'Recipe adaptation looks good. For gluten-free, verify almond flour ratio.', quality_score: 8, suggestions: ['Add resting time note'], final: 'ready' }, null, 2);
+          return JSON.stringify({ quality_assessment: 'Output meets quality standards', issues_found: 1, severity: 'minor', status: 'accepted' }, null, 2);
+        },
+        error: () => JSON.stringify({ error: 'Critique service unavailable', code: 'SERVICE_DOWN', retryable: true }, null, 2)
+      }
+    ];
+
+    const idx = Math.min(stageIndex, mockResponses.length - 1);
+    const isBad = state.badInputMode;
+    // For bad input, force error on stage 1+ but keep stage 0 sometimes working
+    const forceError = isBad && (stageIndex > 0 || Math.random() > 0.5);
+    return forceError ? mockResponses[idx].error() : mockResponses[idx].success();
+  }
+
+  // ========== TASK DATA ==========
+  const TASKS = [
+    { id: 'support', name: 'Support Ticket Triage', desc: 'Classify and route incoming support tickets', input: '{ "message": "text" }', output: '{ "priority": "high", "category": "billing" }', color: 0 },
+    { id: 'essay', name: 'Essay Grader', desc: 'Grade student essays with rubric-based scoring', input: '{ "essay": "text", "rubric": {"clarity":5,"depth":5} }', output: '{ "score": 85, "feedback": "good" }', color: 1 },
+    { id: 'bug', name: 'Bug Report Triage', desc: 'Analyze bug reports and suggest fixes', input: '{ "report": "text", "logs": "text" }', output: '{ "severity": "critical", "fix": "patch" }', color: 2 },
+    { id: 'meeting', name: 'Meeting Notes → Actions', desc: 'Convert meeting transcripts into action items', input: '{ "transcript": "text" }', output: '{ "actions": ["item1"], "owners": ["name"] }', color: 3 },
+    { id: 'recipe', name:  'Recipe Adapter', desc: 'Adapt recipes for dietary needs & servings', input: '{ "recipe": "text", "servings": 4 }', output: '{ "adjusted": "text", "notes": "text" }', color: 4 },
+    { id: 'trip', name: 'Trip Day-Planner', desc: 'Build daily itineraries from preferences', input: '{ "preferences": {"city":"Paris"}, "budget": 500 }', output: '{ "itinerary": ["Eiffel Tower"], "cost": 450 }', color: 5 }
+  ];
+
+  const PIPELINE_CONFIGS = {
+    support: [
+      { label: 'STAGE 1 · UNDERSTAND', technique: 'Role + Structured Output', role: 'You are a support triage specialist. Extract key fields from the ticket and output as JSON.' },
+      { label: 'STAGE 2 · REASON', technique: 'Chain-of-Thought', role: 'Analyze the extracted data step by step. Determine root cause and priority.' },
+      { label: 'STAGE 3 · PRODUCE', technique: 'Goal-Oriented', role: 'Generate a helpful, empathetic response for the customer with a clear action plan.' },
+      { label: 'STAGE 4 · CRITIQUE', technique: 'Critic', role: 'Review the generated response for tone, accuracy, and completeness. Suggest improvements.' }
+    ],
+    essay: [
+      { label: 'STAGE 1 · UNDERSTAND', technique: 'Role + Structured Output', role: 'You are an experienced grader. Extract the essay\'s rubric dimensions and metadata.' },
+      { label: 'STAGE 2 · REASON', technique: 'Chain-of-Thought', role: 'Score each rubric dimension with step-by-step reasoning and evidence from the text.' },
+      { label: 'STAGE 3 · PRODUCE', technique: 'Goal-Oriented', role: 'Produce a revised version of the essay with improvements and a feedback summary.' },
+      { label: 'STAGE 4 · CRITIQUE', technique: 'Critic', role: 'Critique your own grading and revision. Identify any biases or missed issues.' }
+    ],
+    bug: [
+      { label: 'STAGE 1 · UNDERSTAND', technique: 'Role + Structured Output', role: 'You are a QA engineer. Parse the bug report and extract severity, component, and environment details.' },
+      { label: 'STAGE 2 · REASON', technique: 'Chain-of-Thought', role: 'Reason through the bug report step by step. Identify the likely root cause and affected users.' },
+      { label: 'STAGE 3 · PRODUCE', technique: 'Goal-Oriented', role: 'Generate a patch summary and implementation plan for the fix.' },
+      { label: 'STAGE 4 · CRITIQUE', technique: 'Critic', role: 'Review the proposed fix for correctness, edge cases, and potential regressions.' }
+    ],
+    meeting: [
+      { label: 'STAGE 1 · UNDERSTAND', technique: 'Role + Structured Output', role: 'You are a meeting summarizer. Extract key topics, decisions, and attendee info from the transcript.' },
+      { label: 'STAGE 2 · REASON', technique: 'Chain-of-Thought', role: 'Identify action items, assign owners, and set deadlines based on the discussion.' },
+      { label: 'STAGE 3 · PRODUCE', technique: 'Goal-Oriented', role: 'Generate a clean, structured summary with action items and next steps.' }
+    ],
+    recipe: [
+      { label: 'STAGE 1 · UNDERSTAND', technique: 'Role + Structured Output', role: 'You are a chef assistant. Parse the recipe and note original servings, ingredients, and dietary flags.' },
+      { label: 'STAGE 2 · REASON', technique: 'Chain-of-Thought', role: 'Calculate adjusted quantities and identify suitable substitutions for dietary needs.' },
+      { label: 'STAGE 3 · PRODUCE', technique: 'Goal-Oriented', role: 'Output the adapted recipe with clear instructions and substitution notes.' }
+    ],
+    trip: [
+      { label: 'STAGE 1 · UNDERSTAND', technique: 'Role + Structured Output', role: 'You are a travel planner. Extract preferences, budget, and constraints from the input.' },
+      { label: 'STAGE 2 · REASON', technique: 'Chain-of-Thought', role: 'Evaluate possible activities and routes. Optimize for time and budget step by step.' },
+      { label: 'STAGE 3 · PRODUCE', technique: 'Goal-Oriented', role: 'Generate a day-by-day itinerary with timing, costs, and recommendations.' }
+    ]
+  };
+
+  // ========== STATE ==========
+  const state = {
+    tasks: TASKS,
+    selectedTask: null,
+    pipelineNodes: [],
+    badInputMode: false,
+    running: false,
+    runLogs: []
+  };
+
+  // ========== JSON SYNTAX HIGHLIGHT ==========
+  function highlightJSON(obj) {
+    const json = typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2);
+    if (!json || json === '""') return '<span style="color:#94a3b8;">∅</span>';
+    return json.replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>')
+      .replace(/"([^"]+)":/g, '<span style="color:#93c5fd;">"$1"</span>:')
+      .replace(/: "([^"]+)"/g, ': <span style="color:#a7f3d0;">"$1"</span>')
+      .replace(/: (\d+\.?\d*)/g, ': <span style="color:#fde68a;">$1</span>')
+      .replace(/: (true|false)/g, ': <span style="color:#c4b5fd;">$1</span>')
+      .replace(/: (null)/g, ': <span style="color:#fca5a5;">$1</span>');
+  }
+
+  // ========== RENDER TASK GRID ==========
+  function renderTaskGrid() {
+    const grid = document.getElementById('taskGrid');
+    grid.innerHTML = state.tasks.map(t => `
+      <div class="task-card ${state.selectedTask === t.id ? 'selected' : ''}" data-color="${t.color}" data-id="${t.id}">
+        <h3>${t.name}</h3>
+        <div class="desc">${t.desc}</div>
+        <div class="io-tags">
+          <span class="io-tag">📥 ${t.input}</span>
+          <span class="io-tag out">📤 ${t.output}</span>
+        </div>
+      </div>
+    `).join('');
+
+    grid.querySelectorAll('.task-card').forEach(el => {
+      el.addEventListener('click', () => {
+        state.selectedTask = el.dataset.id;
+        renderTaskGrid();
+        buildPipeline();
+        document.getElementById('pipelineSection').style.display = 'block';
+        document.getElementById('runPanel').style.display = 'block';
+        document.getElementById('runOutputs').innerHTML = '';
+      });
+    });
+  }
+
+  // ========== BUILD PIPELINE ==========
+  function buildPipeline() {
+    const config = PIPELINE_CONFIGS[state.selectedTask];
+    if (!config) return;
+    const container = document.getElementById('pipelineContainer');
+    container.innerHTML = '';
+    state.pipelineNodes = config.map((cfg, i) => {
+      const task = state.tasks.find(t => t.id === state.selectedTask);
+      const sampleInput = JSON.stringify(JSON.parse(task?.input?.replace(/"\.\.\."/g, '"..."') || '{"key":"value"}'), null, 2);
+      return { ...cfg, index: i, input: sampleInput, output: '// pending', prompt: cfg.role };
+    });
+
+    state.pipelineNodes.forEach((node, i) => {
+      if (i > 0) {
+        const connector = document.createElement('div');
+        connector.className = 'stage-connector';
+        connector.innerHTML = makeArrow(node.index === 1 ? '#00C9A7' : node.index === 2 ? '#6C63FF' : node.index === 3 ? '#FFB347' : '#6C63FF');
+        container.appendChild(connector);
+      }
+      const el = document.createElement('div');
+      el.className = 'stage-node';
+      el.dataset.stage = node.index;
+      const task = state.tasks.find(t => t.id === state.selectedTask);
+      el.innerHTML = `
+        <div class="stage-top">
+          <span class="stage-label">${node.label}</span>
+          <span class="stage-badge">${node.technique}</span>
+        </div>
+        <textarea data-idx="${node.index}" placeholder="Write your prompt for stage ${node.index + 1}...">${node.prompt}</textarea>
+        <div class="io-previews">
+          <div class="io-box">
+            <div class="label">📥 Input</div>
+            <div class="json-block">${highlightJSON(task ? task.input.replace(/"\.\.\."/g, '"..."') : '{}')}</div>
+          </div>
+          <div class="io-box">
+            <div class="label">📤 Output</div>
+            <div class="json-block">${highlightJSON('// pending')}</div>
+          </div>
+        </div>
+      `;
+      container.appendChild(el);
+
+      el.querySelector('textarea').addEventListener('input', function() {
+        state.pipelineNodes[+this.dataset.idx].prompt = this.value;
+      });
+    });
+  }
+
+  function makeArrow(color) {
+    return `<svg viewBox="0 0 48 24" xmlns="http://www.w3.org/2000/svg">
+      <path class="arrow-line" stroke="${color}" d="M2,12 L40,12"/>
+      <polygon class="arrow-head" stroke="${color}" fill="${color}" points="36,6 46,12 36,18"/>
+    </svg>`;
+  }
+
+  // ========== RUN PIPELINE ==========
+  document.getElementById('runBtn').addEventListener('click', runPipeline);
+  document.getElementById('brokenToggle').addEventListener('change', function() {
+    state.badInputMode = this.checked;
+    document.getElementById('runOutputs').innerHTML = '';
+  });
+
+  async function runPipeline() {
+    if (state.running) return;
+    if (!state.selectedTask) return;
+    state.running = true;
+    const btn = document.getElementById('runBtn');
+    btn.classList.add('loading');
+    btn.disabled = true;
+    const outputsDiv = document.getElementById('runOutputs');
+    outputsDiv.innerHTML = '';
+    state.runLogs = [];
+
+    const nodes = state.pipelineNodes;
+    let currentInput = state.badInputMode
+      ? JSON.stringify({ bad_field: null, missing_data: undefined })
+      : JSON.stringify({ input: 'Sample data for ' + (state.tasks.find(t => t.id === state.selectedTask)?.name || 'task') });
+
+    for (let i = 0; i < nodes.length; i++) {
+      const stageEl = document.querySelectorAll('.stage-node')[i];
+      if (stageEl) { stageEl.classList.remove('done', 'error'); stageEl.classList.add('processing'); }
+
+      // Create output card
+      const card = document.createElement('div');
+      card.className = 'run-stage-card';
+      card.dataset.stage = i;
+      card.innerHTML = `
+        <div class="rc-header">
+          <span class="rc-label">${nodes[i].label}</span>
+          <span class="rc-status running">⏳ Running...</span>
+        </div>
+        <div class="rc-body">
+          <div class="rc-io">
+            <div class="rc-io-label">📥 Input</div>
+            <pre>${highlightJSON(currentInput)}</pre>
+          </div>
+          <div class="rc-io">
+            <div class="rc-io-label">📤 Output</div>
+            <pre class="output-pre">⏳ Generating...</pre>
+          </div>
+        </div>
+      `;
+      outputsDiv.appendChild(card);
+
+      // Animate in
+      requestAnimationFrame(() => { card.classList.add('visible'); });
+
+      // Allow header to toggle body
+      card.querySelector('.rc-header').addEventListener('click', function() {
+        card.querySelector('.rc-body').classList.toggle('open');
+      });
+      // Auto-open
+      card.querySelector('.rc-body').classList.add('open');
+
+      // Call LLM
+      const prompt = nodes[i].prompt + '\n\nInput JSON:\n' + currentInput;
+      let result, success;
+      try {
+        result = await callLLM(prompt, i);
+        success = true;
+      } catch (e) {
+        result = JSON.stringify({ error: e.message, code: 'EXCEPTION' }, null, 2);
+        success = false;
+      }
+
+      // Validate JSON
+      let parsed;
+      try { parsed = JSON.parse(result); } catch(e) { parsed = { raw: result }; }
+
+      // Check if result is an error object
+      const isError = parsed && (parsed.error || parsed.code?.includes('ERROR') || parsed.code?.includes('FAILURE') || parsed.code === 'SERVICE_DOWN');
+
+      // Update card
+      const statusEl = card.querySelector('.rc-status');
+      const outputPre = card.querySelector('.output-pre');
+      if (isError) {
+        statusEl.className = 'rc-status error';
+        statusEl.textContent = '✗ Error';
+        if (stageEl) { stageEl.classList.remove('processing'); stageEl.classList.add('error'); }
+        success = false;
+      } else {
+        statusEl.className = 'rc-status success';
+        statusEl.textContent = '✓ Success';
+        if (stageEl) { stageEl.classList.remove('processing'); stageEl.classList.add('done'); }
+        success = true;
+      }
+      outputPre.innerHTML = highlightJSON(result);
+
+      // Update stage node output preview
+      const nodeEl = document.querySelectorAll('.stage-node')[i];
+      if (nodeEl) {
+        const outBlock = nodeEl.querySelectorAll('.io-box')[1]?.querySelector('.json-block');
+        if (outBlock) outBlock.innerHTML = highlightJSON(result);
+      }
+
+      state.runLogs.push({ stage: i, input: currentInput, output: result, success: !isError });
+      currentInput = result;
+
+      // Small pause between stages
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    // Clean up processing states
+    document.querySelectorAll('.stage-node.processing').forEach(el => el.classList.remove('processing'));
+
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    state.running = false;
+  }
+
+  // ========== REFLECTION ==========
+  document.getElementById('saveReflectionBtn').addEventListener('click', function() {
+    const text = document.getElementById('reflectionText').value.trim();
+    if (!text) return;
+    localStorage.setItem('pp_reflection', text);
+    const saved = document.getElementById('reflSaved');
+    saved.classList.add('show');
+    setTimeout(() => saved.classList.remove('show'), 2500);
+  });
+
+  // Load saved reflection
+  const savedRef = localStorage.getItem('pp_reflection');
+  if (savedRef) document.getElementById('reflectionText').value = savedRef;
+
+  // ========== INIT ==========
+  renderTaskGrid();
+</script>
+</body>
+</html>
