@@ -143,3 +143,7 @@ OpenRouter currently does not host video generation models. The app generates a 
 ## 📄 License
 
 MIT
+
+## Specification
+
+See the project specification: [spec.md](spec.md)

@@ -71,3 +71,7 @@ streamlit run app.py
 - **few_shot** — Include at least two input-output examples before the real task.
 - **reasoning** — Instruct the AI to think step by step before answering.
 - **defensive_constraints** — Add guardrails to handle harmful, off-topic, or adversarial input.
+
+## Specification
+
+See the project specification: [spec.md](spec.md)

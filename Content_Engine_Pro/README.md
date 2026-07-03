@@ -153,3 +153,7 @@ All retries, critic feedback, API latency, and generation time are logged via Py
 ## 📄 License
 
 MIT
+
+## Specification
+
+See the project specification: [spec.md](spec.md)

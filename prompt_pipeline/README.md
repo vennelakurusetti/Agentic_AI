@@ -69,4 +69,8 @@ prompt_pipeline/
 ## Tech Stack
 
 - Vanilla HTML/CSS/JavaScript (no build step, no dependencies)
+
+## Specification
+
+See the project specification: [spec.md](spec.md)
 - Google Fonts: Inter, Fira Code

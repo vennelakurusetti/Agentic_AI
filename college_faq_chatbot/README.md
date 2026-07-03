@@ -240,3 +240,7 @@ python-docx>=1.0.0
 ## 📄 License
 
 MIT
+
+## Specification
+
+See the project specification: [spec.md](spec.md)
