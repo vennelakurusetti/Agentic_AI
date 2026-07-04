@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import config
 from rag import answer_question, get_vector_store, retrieve_chunks
 from ingest import get_chunk_count
+from intent_classifier import handle_intent, INTENT_COLLEGE_QUERY
 from utils import logger, Timer
 
 # Page configuration
@@ -456,16 +457,39 @@ def process_user_input(prompt: str) -> None:
 
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        full_response = ""
 
         try:
-            # Convert chat history for context
+            # Step 1: Classify intent before hitting the RAG pipeline
+            intent, intent_response = handle_intent(prompt)
+
+            if intent != INTENT_COLLEGE_QUERY:
+                # Non-college query: return pre-defined response (no RAG call)
+                answer = intent_response
+                citations = []
+                chunks = []
+
+                # Display the response
+                message_placeholder.markdown(answer)
+
+                extra = {
+                    "citations": citations,
+                    "chunks_retrieved": 0,
+                    "latency": 0,
+                    "tokens_used": 0,
+                    "chunks": [],
+                }
+
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": answer, "extra": extra}
+                )
+                return
+
+            # Step 2: College query — proceed with RAG pipeline
             chat_history = [
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages[:-1]
             ]
 
-            # Get response
             with Timer("Full RAG Pipeline"):
                 result = answer_question(
                     question=prompt,
@@ -487,7 +511,6 @@ def process_user_input(prompt: str) -> None:
                     time.sleep(0.02)
             message_placeholder.markdown(displayed_answer)
 
-            # Add assistant message to history
             extra = {
                 "citations": citations,
                 "chunks_retrieved": result.get("chunks_retrieved", 0),
