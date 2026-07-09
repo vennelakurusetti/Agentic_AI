@@ -18,6 +18,33 @@ from ingest import get_chunk_count
 from intent_classifier import handle_intent, INTENT_COLLEGE_QUERY
 from utils import logger, Timer
 
+# ── Memory subsystem ──────────────────────────────────────
+from memory.memory_manager import (
+    process_and_store_memories,
+    retrieve_user_context,
+    clear_user_data,
+    run_cleanup,
+    get_stats,
+    get_session_id,
+)
+from memory.memory_bootstrapper import (
+    bootstrap_memories_from_history,
+    append_to_chat_history,
+    load_chat_history,
+)
+
+# ── Observability & Governance ────────────────────────────
+from observability.llm_logger import log_llm_call, read_logs
+from observability.session_stats import compute_session_stats, render_stats_html
+from observability.threshold_alerts import (
+    validate_input_length,
+    check_all_alerts,
+)
+from observability.ab_testing import get_prompt_version, log_ab_result
+from observability.log_analyzer import analyze_logs
+from governance.safety_scanner import run_full_scan
+from governance.report import generate_report
+
 # Page configuration
 st.set_page_config(
     page_title="BVRIT Hyderabad - College FAQ Chatbot",
@@ -266,6 +293,18 @@ def initialize_session_state() -> None:
         st.session_state.debug_mode = False
     if "top_k" not in st.session_state:
         st.session_state.top_k = config.TOP_K
+    # ── Memory session state ──
+    if "user_id" not in st.session_state:
+        st.session_state.user_id = config.MEMORY_DEFAULT_USER_ID
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = get_session_id()
+    if "memory_count" not in st.session_state:
+        st.session_state.memory_count = 0
+    if "memory_initialized" not in st.session_state:
+        st.session_state.memory_initialized = False
+    # ── Bootstrapping flag (runs only once per user) ──
+    if "bootstrapped" not in st.session_state:
+        st.session_state.bootstrapped = False
 
 
 def check_vector_store() -> bool:
@@ -295,6 +334,39 @@ def render_sidebar() -> None:
             "</div>",
             unsafe_allow_html=True,
         )
+
+        # ── Username / Identity ──
+        st.markdown("#### 👤 Your Identity")
+        new_user_id = st.text_input(
+            "Username",
+            value=st.session_state.user_id,
+            placeholder="Enter your username...",
+            label_visibility="collapsed",
+            key="username_input",
+        )
+        if new_user_id and new_user_id != st.session_state.user_id:
+            # User changed — reset for new user
+            st.session_state.user_id = new_user_id
+            st.session_state.bootstrapped = False
+            st.session_state.messages = []
+            st.session_state.memory_count = 0
+            st.rerun()
+
+        if st.session_state.bootstrapped:
+            st.markdown(
+                f'<div class="sidebar-status status-ok" style="font-size:0.8rem;">'
+                f"✅ Bootstrapped<br><small>{st.session_state.memory_count} memories</small>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                '<div class="sidebar-status status-warn" style="font-size:0.8rem;">'
+                "⚠️ Not bootstrapped"
+                "</div>",
+                unsafe_allow_html=True,
+            )
+
         st.markdown("---")
 
         # Document status
@@ -451,58 +523,129 @@ def render_chat_message(message: Dict[str, Any]) -> None:
 
 
 def process_user_input(prompt: str) -> None:
-    """Process user input and generate a response."""
+    """Process user input and generate a response with memory integration + observability."""
+    # ── Input validation ──
+    validation_error = validate_input_length(prompt)
+    if validation_error:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append(
+            {"role": "assistant", "content": validation_error, "extra": {}}
+        )
+        st.rerun()
+        return
+
+    # Check for "clear my data" privacy command
+    if prompt.lower().strip() in ["clear my data", "clear my memories", "forget me"]:
+        deleted = clear_user_data(st.session_state.user_id)
+        answer = f"✅ I've cleared {deleted} memory entries for you. I won't remember anything about our past conversations."
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state.messages.append(
+            {"role": "assistant", "content": answer, "extra": {}}
+        )
+        st.session_state.memory_count = 0
+        st.rerun()
+        return
+
     # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
+        start_time = time.time()
 
         try:
-            # Step 1: Classify intent before hitting the RAG pipeline
+            # Step 1: Classify intent
             intent, intent_response = handle_intent(prompt)
 
             if intent != INTENT_COLLEGE_QUERY:
-                # Non-college query: return pre-defined response (no RAG call)
                 answer = intent_response
-                citations = []
-                chunks = []
-
-                # Display the response
                 message_placeholder.markdown(answer)
-
                 extra = {
-                    "citations": citations,
-                    "chunks_retrieved": 0,
-                    "latency": 0,
-                    "tokens_used": 0,
-                    "chunks": [],
+                    "citations": [], "chunks_retrieved": 0,
+                    "latency": 0, "tokens_used": 0, "chunks": [],
                 }
-
                 st.session_state.messages.append(
                     {"role": "assistant", "content": answer, "extra": extra}
                 )
+                # Log non-college query
+                log_llm_call(
+                    model=config.LLM_MODEL,
+                    input_tokens=len(prompt),
+                    output_tokens=len(answer),
+                    latency=time.time() - start_time,
+                    success=True,
+                    metadata={"intent": "non_college_query"},
+                )
                 return
 
-            # Step 2: College query — proceed with RAG pipeline
+            # Step 2: A/B test — assign prompt version (random A/B)
+            ab_version, _ = get_prompt_version()
+
+            # Step 3: Retrieve user memories for context injection
+            user_id = st.session_state.user_id
+            memory_context = retrieve_user_context(user_id, prompt, top_k=config.MEMORY_TOP_K)
+            if memory_context:
+                logger.info(f"Injected memory context for user {user_id}")
+
+            # Step 4: Build chat history
             chat_history = [
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages[:-1]
             ]
 
+            # Step 5: Run RAG pipeline with memory context
             with Timer("Full RAG Pipeline"):
                 result = answer_question(
                     question=prompt,
                     chat_history=chat_history,
                     top_k=st.session_state.top_k,
                     debug=st.session_state.debug_mode,
+                    memory_context=memory_context,  # passed to prompt
                 )
 
             answer = result.get("answer", "")
             citations = result.get("citations", [])
             chunks = result.get("chunks", [])
+            latency = time.time() - start_time
+            refused = "not available in the uploaded knowledge base" in answer.lower()
 
-            # Simulate streaming
+            # Step 6: Log the LLM call to JSONL
+            log_llm_call(
+                model=config.LLM_MODEL,
+                input_tokens=len(prompt) + len(memory_context),
+                output_tokens=len(answer),
+                latency=latency,
+                success=True,
+                prompt_version=ab_version,
+                metadata={
+                    "citations_count": len(citations),
+                    "refused": refused,
+                    "memory_injected": bool(memory_context),
+                },
+            )
+
+            # Log A/B test result
+            log_ab_result(ab_version, citations, refused)
+
+            # Step 7: Threshold alerts
+            cost_est = 0.00015 * len(prompt) / 1000 + 0.00060 * len(answer) / 1000
+            alerts = check_all_alerts(latency, cost_est)
+            for alert in alerts:
+                logger.warning(f"THRESHOLD: {alert}")
+
+            # Step 8: Safety scan (in background, not blocking)
+            try:
+                from rag import retrieve_chunks as rc
+                safety_context = " ".join(c.page_content[:200] for c in chunks[:3])
+                scan_result = run_full_scan(prompt, answer, safety_context)
+                if scan_result.get("hallucination", {}).get("hallucination"):
+                    logger.warning(f"Hallucination detected: {scan_result['hallucination']['details']}")
+                if scan_result.get("toxicity", {}).get("toxic_detected"):
+                    logger.warning(f"Toxic content detected: {scan_result['toxicity']}")
+            except Exception as e:
+                logger.debug(f"Safety scan skipped: {e}")
+
+            # Step 9: Simulate streaming
             displayed_answer = ""
             for char in answer:
                 displayed_answer += char
@@ -514,22 +657,53 @@ def process_user_input(prompt: str) -> None:
             extra = {
                 "citations": citations,
                 "chunks_retrieved": result.get("chunks_retrieved", 0),
-                "latency": 0,
-                "tokens_used": 0,
+                "latency": round(latency, 2),
+                "tokens_used": len(answer) // 4,  # rough estimate
                 "chunks": chunks if st.session_state.debug_mode else [],
+                "memory_context": memory_context if memory_context else "",
+                "ab_version": ab_version,
             }
 
             st.session_state.messages.append(
                 {"role": "assistant", "content": answer, "extra": extra}
             )
 
+            # Step 10: Persist this turn to chat history file
+            append_to_chat_history(
+                user_id=user_id,
+                user_message=prompt,
+                assistant_message=answer,
+                metadata={"session_id": st.session_state.session_id},
+            )
+
+            # Step 11: Extract and store memories from this conversation turn
+            stored = process_and_store_memories(
+                user_input=prompt,
+                assistant_response=answer,
+                user_id=user_id,
+                session_id=st.session_state.session_id,
+                use_llm_extraction=False,
+            )
+            if stored > 0:
+                st.session_state.memory_count += stored
+                logger.info(f"Stored {stored} new memories for user {user_id}")
+
         except Exception as e:
+            latency = time.time() - start_time
             error_msg = f"Sorry, an error occurred: {str(e)}"
             message_placeholder.error(error_msg)
             st.session_state.messages.append(
                 {"role": "assistant", "content": error_msg, "extra": {}}
             )
             logger.error(f"Error processing question: {e}")
+            log_llm_call(
+                model=config.LLM_MODEL,
+                input_tokens=len(prompt),
+                output_tokens=0,
+                latency=latency,
+                success=False,
+                error=str(e),
+            )
 
 
 def main() -> None:
@@ -537,6 +711,37 @@ def main() -> None:
     load_dotenv()
     initialize_session_state()
     check_vector_store()
+
+    # ── Initialize memory: cleanup old memories on first run ──
+    if not st.session_state.memory_initialized:
+        try:
+            deleted = run_cleanup(days=config.MEMORY_CLEANUP_DAYS)
+            stats = get_stats(st.session_state.user_id)
+            st.session_state.memory_count = stats["total_memories"]
+            st.session_state.memory_initialized = True
+            if deleted > 0:
+                logger.info(f"Startup cleanup: removed {deleted} expired memories")
+        except Exception as e:
+            logger.warning(f"Memory init skipped (first run?): {e}")
+
+    # ── One-time memory bootstrapping from chat history ──
+    if not st.session_state.bootstrapped and st.session_state.memory_initialized:
+        try:
+            result = bootstrap_memories_from_history(
+                st.session_state.user_id,
+                use_llm=False,
+            )
+            st.session_state.bootstrapped = True
+            stats = get_stats(st.session_state.user_id)
+            st.session_state.memory_count = stats["total_memories"]
+            if result["new_count"] > 0 or result["updated_count"] > 0:
+                logger.info(
+                    f"Bootstrapped {result['new_count']} new, "
+                    f"{result['updated_count']} updated, "
+                    f"{result['skipped_count']} skipped from {result['total_turns']} turns"
+                )
+        except Exception as e:
+            logger.warning(f"Bootstrapping skipped: {e}")
 
     # Header
     st.markdown(
@@ -549,6 +754,47 @@ def main() -> None:
 
     # Render sidebar
     render_sidebar()
+
+    # Memory status + Session Stats in sidebar
+    with st.sidebar:
+        st.markdown("---")
+        st.markdown("#### 📊 Session Stats")
+        stats = compute_session_stats()
+        st.markdown(render_stats_html(stats), unsafe_allow_html=True)
+
+        # Run log analyzer and governance report buttons
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔍 Analyze Logs", use_container_width=True):
+                analysis = analyze_logs()
+                if analysis["anomaly_detected"]:
+                    st.error(f"⚠️ {len(analysis['anomalies'])} anomalies found")
+                    for a in analysis["anomalies"]:
+                        st.caption(f"• {a}")
+                else:
+                    st.success("✅ No anomalies detected")
+        with col2:
+            if st.button("📋 Governance Report", use_container_width=True):
+                try:
+                    report = generate_report()
+                    st.success(f"✅ Report saved ({report['report_metadata']['version']})")
+                except Exception as e:
+                    st.error(f"Report generation failed: {e}")
+
+        if st.session_state.memory_initialized:
+            st.markdown("---")
+            st.markdown("#### 🧠 Memory")
+            st.markdown(
+                f'<div class="sidebar-status status-ok" style="font-size:0.8rem;">'
+                f"✅ Active<br><small>{st.session_state.memory_count} memories stored</small>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+            if st.button("🗑️ Clear My Data", use_container_width=True, key="clear_memory"):
+                deleted = clear_user_data(st.session_state.user_id)
+                st.session_state.memory_count = 0
+                st.success(f"Cleared {deleted} memories!")
+                st.rerun()
 
     # Chat history
     for message in st.session_state.messages:

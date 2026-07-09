@@ -34,8 +34,15 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 # RAGAS evaluation
 RAGAS_METRICS = ["faithfulness", "answer_relevancy", "context_precision", "context_recall"]
 
-# ChromaDB collection name
+# ChromaDB collection name (knowledge base)
 CHROMA_COLLECTION_NAME = "college_faq"
+
+# ── Memory ChromaDB (separate database) ──────────────────────
+MEMORY_DIR = BASE_DIR / "memory_db"
+MEMORY_COLLECTION_NAME = "user_memory"
+MEMORY_TOP_K = 5          # Number of memories to retrieve per query
+MEMORY_CLEANUP_DAYS = 30  # Auto-delete memories older than this
+MEMORY_DEFAULT_USER_ID = "default_user"
 
 # Debug mode default
 DEBUG_MODE = False

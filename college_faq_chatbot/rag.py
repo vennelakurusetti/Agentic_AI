@@ -144,9 +144,11 @@ def rewrite_query(
 def generate_response(
     question: str,
     chunks: List[Document],
+    chat_history: Optional[List[Dict[str, str]]] = None,
     debug: bool = False,
+    memory_context: str = "",
 ) -> Dict[str, Any]:
-    """Generate a response using the LLM with retrieved context."""
+    """Generate a response using the LLM with retrieved context, conversation history, and optional user memory."""
     # Build context string from chunks (skip thin chunks with no real content)
     context_parts = []
     for i, chunk in enumerate(chunks):
@@ -162,17 +164,35 @@ def generate_response(
 
     context_str = "\n\n".join(context_parts)
 
-    # Format the system prompt
+    # Format conversation history (last 10 turns, most recent first)
+    history_lines = []
+    if chat_history:
+        for msg in reversed(chat_history[-10:]):  # Last 10 turns
+            role = msg.get("role", "user").capitalize()
+            content = msg.get("content", "")
+            if content:
+                history_lines.append(f"{role}: {content}")
+    if history_lines:
+        chat_history_str = "Conversation History (most recent first):\n" + "\n".join(history_lines)
+    else:
+        chat_history_str = ""
+
+    # Format the system prompt with memory context and conversation history
     prompt = PromptTemplate(
         template=SYSTEM_PROMPT,
-        input_variables=["context", "question"],
+        input_variables=["context", "memory_context", "chat_history", "question"],
     )
 
     llm = get_llm()
     chain = prompt | llm
 
     with Timer("Generation"):
-        response = chain.invoke({"context": context_str, "question": question})
+        response = chain.invoke({
+            "context": context_str,
+            "memory_context": memory_context,
+            "chat_history": chat_history_str,
+            "question": question,
+        })
 
     # Extract citations from chunk metadata (always use section names)
     citations = list(dict.fromkeys(
@@ -193,6 +213,7 @@ def answer_question(
     top_k: int = config.TOP_K,
     filter_metadata: Optional[Dict[str, Any]] = None,
     debug: bool = False,
+    memory_context: str = "",
 ) -> Dict[str, Any]:
     """Full RAG pipeline: rewrite query -> retrieve -> generate."""
     if chat_history is None:
@@ -217,7 +238,7 @@ def answer_question(
             "chunks": [],
         }
 
-    # Step 3: Generate response
-    result = generate_response(standalone_query, chunks, debug=debug)
+    # Step 3: Generate response with conversation history, memory context, and RAG chunks
+    result = generate_response(standalone_query, chunks, chat_history=chat_history, debug=debug, memory_context=memory_context)
 
     return result
