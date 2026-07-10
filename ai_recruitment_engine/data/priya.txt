@@ -1,0 +1,10 @@
+Name: Priya Sharma
+Education: Bachelor of Technology in Computer Science, IIT Delhi
+Experience: 6 years
+Skills: Python, JavaScript, React, AWS, Docker, Kubernetes, CI/CD, Microservices, Agile
+Experience Details:
+- Senior Engineer at Google (3 years): Built scalable microservices using Python and Docker
+- Software Engineer at Amazon (3 years): Developed React frontends and AWS backend services
+- Intern at Microsoft (6 months): Worked on CI/CD pipeline automation
+
+Certifications: AWS Certified Solutions Architect

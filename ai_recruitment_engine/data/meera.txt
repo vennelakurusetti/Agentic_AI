@@ -1,0 +1,9 @@
+Name: Meera Patel
+Education: Master of Computer Applications (MCA), VIT Vellore
+Experience: 3 years
+Skills: Python, Django, Flask, PostgreSQL, Docker, Git, HTML, CSS
+Experience Details:
+- Junior Developer at Zomato (2 years): Built backend services with Django and Flask
+- Intern at Flipkart (1 year): Worked on PostgreSQL database optimization
+
+Note: No JavaScript, cloud (AWS/Azure), or React experience

@@ -1,0 +1,24 @@
+Job Title: Senior Software Engineer
+
+We are looking for a Senior Software Engineer to join our team. The ideal candidate will have strong experience in Python, JavaScript, and cloud technologies.
+
+Required Qualifications:
+- Bachelor's degree in Computer Science or related field
+- 5+ years of experience in software development
+- Strong proficiency in Python
+- Experience with JavaScript frameworks (React preferred)
+- Experience with cloud platforms (AWS or Azure)
+- Excellent communication skills
+
+Preferred Qualifications:
+- Experience with Docker and Kubernetes
+- Knowledge of CI/CD pipelines
+- Experience with microservices architecture
+- Familiarity with Agile methodologies
+
+Responsibilities:
+- Design and implement scalable software solutions
+- Collaborate with cross-functional teams
+- Mentor junior developers
+- Participate in code reviews
+- Write unit and integration tests
