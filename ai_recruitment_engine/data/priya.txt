@@ -1,10 +1,41 @@
-Name: Priya Sharma
-Education: Bachelor of Technology in Computer Science, IIT Delhi
-Experience: 6 years
-Skills: Python, JavaScript, React, AWS, Docker, Kubernetes, CI/CD, Microservices, Agile
-Experience Details:
-- Senior Engineer at Google (3 years): Built scalable microservices using Python and Docker
-- Software Engineer at Amazon (3 years): Developed React frontends and AWS backend services
-- Intern at Microsoft (6 months): Worked on CI/CD pipeline automation
+Name
+Priya Sharma
+Education
+B.Tech Computer Science
+VNR VJIET
+CGPA: 9.21
 
-Certifications: AWS Certified Solutions Architect
+Skills
+Python
+LangChain
+OpenAI API
+ChromaDB
+FAISS
+Prompt Engineering
+Git
+GitHub
+Streamlit
+FastAPI
+
+Projects
+1. AI Campus Assistant
+Built a Retrieval-Augmented Generation chatbot for college documentation using LangChain,
+ChromaDB, OpenAI embeddings and GPT-4o Mini.
+Implemented semantic search with vector embeddings.
+Developed the frontend using Streamlit.
+
+2. Resume Screening AI
+Developed an AI resume ranking system using LangChain and OpenRouter.
+Integrated prompt engineering for structured evaluation.
+
+Certifications
+Google Generative AI
+
+Communication
+Led a team of four students during Smart India Hackathon.
+Presented project in front of industry mentors.
+
+Experience
+Internship
+AI Intern
+Built internal AI automation tools using Python and LangChain.

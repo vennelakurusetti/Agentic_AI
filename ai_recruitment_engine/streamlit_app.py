@@ -11,7 +11,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
 # ─── Backend imports (unchanged) ──────────────────────────────────────────
-from dotenv import load_dotenv; load_dotenv()
+from dotenv import load_dotenv; load_dotenv(os.path.join(SCRIPT_DIR, ".env"))
 from graph.graph import build_recruitment_graph
 from graph.state import RecruitmentState
 from graph.nodes import node_parse_jd, node_generate_rubric
@@ -38,7 +38,7 @@ from ui.components import (
 # ═══════════════════════════════════════════════════════════════════════════
 
 def init_state():
-    for k, v in {
+    defaults = {
         "jd_uploaded": False, "jd_text": "", "jd_parsed": None, "rubric": None,
         "candidates": [], "results": [], "selected_candidates": [],
         "trajectory": [], "agent_running": False, "agent_complete": False,
@@ -47,9 +47,12 @@ def init_state():
         "available_slots": None, "log_stream": [],
         "model": os.getenv("MODEL", "openai/gpt-4o-mini"),
         "fairness_audit": None, "interview_approvals": {},
-        "interview_slots": {},  # {name: InterviewSlot} after approval
-    }.items():
-        if k not in st.session_state: st.session_state[k] = v
+        "interview_slots": {},
+    }
+    # Only set defaults for keys that don't exist yet
+    for k, v in defaults.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SIDEBAR
@@ -180,20 +183,41 @@ def run_pipeline():
             r = json.loads(call_llm(DECISION_PROMPT.format(score_card=sc.model_dump_json())))
             dec = FinalDecision(**r); log(f"  ✓ Decision: {dec.decision}")
 
-            guardrail_passed = True
-            if dec.decision == "SELECT":
-                from prompts.guardrail_prompt import GUARDRAIL_PROMPT
-                g = json.loads(call_llm(GUARDRAIL_PROMPT.format(decision=dec.model_dump_json())))
-                guardrail_passed = g.get("is_safe", True)
-                log(f"  ✓ Guardrail: {'Passed' if guardrail_passed else 'WARNING'}")
+            # Enforce: if score < 0.40, override to REJECT; if 0.40-0.60, override to HOLD
+            if sc.total_score < 0.40 and dec.decision != "REJECT":
+                dec.decision = "REJECT"
+                dec.reason = f"Score {sc.total_score:.2f} is below 40% threshold. {dec.reason}"
+                log(f"  ⚠️ Score {sc.total_score:.2f} < 0.40 — forced to REJECT")
+            elif 0.40 <= sc.total_score < 0.60 and dec.decision not in ("HOLD", "REJECT"):
+                dec.decision = "HOLD"
+                dec.reason = f"Score {sc.total_score:.2f} is in 40-60% range. {dec.reason}"
+                log(f"  ⚠️ Score {sc.total_score:.2f} in 40-60% range — forced to HOLD")
+
+            # Run guardrail on ALL candidates (not just SELECT)
+            from prompts.guardrail_prompt import GUARDRAIL_PROMPT
+            guardrail_raw = call_llm(GUARDRAIL_PROMPT.format(decision=dec.model_dump_json()))
+            guardrail_data = json.loads(guardrail_raw)
+            guardrail_passed = guardrail_data.get("is_safe", True)
+            guardrail_reason = guardrail_data.get("reason", "")
+            guardrail_issues = guardrail_data.get("issues", [])
+            
+            # If guardrail fails, zero out the score and override decision to REJECT
+            if not guardrail_passed:
+                sc.total_score = 0.0
+                dec.decision = "REJECT"
+                dec.reason = f"Guardrail violation: {guardrail_reason or 'Safety check failed'}"
+                dec.candidate_name = name
+                log(f"  ⚠️ Guardrail FAILED — {guardrail_reason}. Score set to 0, rejected.")
+            else:
+                log(f"  ✓ Guardrail: Passed")
             
             # ⚠️ NO scheduling here — only store the result, slot is None
             # Interview tab will handle scheduling after human approval
-            ss.results.append((name, sc, dec, guardrail_passed))
+            ss.results.append((name, sc, dec, guardrail_passed, guardrail_reason, guardrail_issues))
 
         # Store selected candidates (guardrail-passed SELECT decisions)
         ss.selected_candidates = [
-            (n, sc, dec) for n, sc, dec, gp in ss.results
+            (n, sc, dec) for n, sc, dec, gp, gr, gi in ss.results
             if dec.decision == "SELECT" and gp
         ]
         
@@ -204,7 +228,7 @@ def run_pipeline():
         # Run fairness audit on all results
         log("🔍 Running fairness audit...")
         ss.fairness_audit = audit_all_candidates(
-            [(n, sc, dec, None) for n, sc, dec, _ in ss.results]
+            [(n, sc, dec, None) for n, sc, dec, *_ in ss.results]
         )
         if ss.fairness_audit["overall_bias_detected"]:
             log(f"⚠️ Bias detected in {sum(1 for a in ss.fairness_audit['audit_log'] if a['bias_detected'])} candidate(s)")
@@ -228,9 +252,14 @@ def home_tab():
         return
 
     total = len(results)
+    # Debug: print decisions to verify
+    decisions = [r[2].decision for r in results]
+    print(f"[DEBUG] home_tab: {total} results, decisions={decisions}")
+    # Use FinalDecision.decision (r[2]) mapped to metric labels
+    # "SELECT" -> Interview, "REJECT" -> Reject, "HOLD" -> Hold
     interview = sum(1 for r in results if r[2].decision == "SELECT")
-    hold = sum(1 for r in results if r[2].decision == "HOLD")
     reject = sum(1 for r in results if r[2].decision == "REJECT")
+    hold = sum(1 for r in results if r[2].decision == "HOLD")
 
     # ── Row 1: Metric Cards ──
     cols = st.columns(4)
@@ -254,7 +283,7 @@ def home_tab():
 
     st.markdown("<div style='height:2px;background:#e2e8f0;margin:0.2rem 0 0.5rem 0;'></div>", unsafe_allow_html=True)
 
-    for rank, (name, score, decision, guardrail_bool) in enumerate(sorted_r, 1):
+    for rank, (name, score, decision, *rest) in enumerate(sorted_r, 1):
         slot_str = ""
         candidate_table_row(rank, name, score.total_score, decision.decision, slot_str)
 
@@ -365,8 +394,8 @@ def guardrails_tab():
         st.markdown("**Compliance Summary**")
         if st.session_state.results:
             rows = [{"Candidate": n, "Score": f"{s.total_score:.2f}", "Decision": d.decision,
-                     "Fairness": "✅ Pass", "Bias": "✅ Pass"} for n,s,d,gp in st.session_state.results]
-            st.dataframe(rows, use_container_width=True, hide_index=True)
+                     "Fairness": "✅ Pass", "Bias": "✅ Pass"} for n,s,d,*_ in st.session_state.results]
+            st.dataframe(rows, width='stretch', hide_index=True)
         else:
             st.info("No data.")
         st.markdown('</div>', unsafe_allow_html=True)
@@ -384,8 +413,8 @@ def audit_tab():
             data = [{"Candidate": n, "Score": round(s.total_score,2), "Decision": d.decision,
                      "Reason": d.reason[:70]+"...",
                      "Slot": "⏳ Pending Approval"}
-                    for n,s,d,gp in st.session_state.results]
-            st.dataframe(data, use_container_width=True, hide_index=True)
+                    for n,s,d,*_ in st.session_state.results]
+            st.dataframe(data, width='stretch', hide_index=True)
 
     with t2:
         traj = st.session_state.trajectory
@@ -393,7 +422,7 @@ def audit_tab():
             data = [{"Step": i, "Tool": e.get("tool_used",""), "Observation": (e.get("observation","") or "")[:70],
                      "Decision": e.get("decision","")}
                     for i,e in enumerate(traj,1) if isinstance(e, dict)]
-            st.dataframe(data, use_container_width=True, hide_index=True)
+            st.dataframe(data, width='stretch', hide_index=True)
 
     with t3:
         ex = {
@@ -403,7 +432,7 @@ def audit_tab():
                          "reason": d.reason, "criteria": [{"name":c.name,"score":c.score,
                          "weight":c.weight,"evidence":c.evidence} for c in s.criteria],
                          "guardrail_passed": bool(gp)}
-                        for n,s,d,gp in st.session_state.results],
+                        for n,s,d,gp,*_ in st.session_state.results],
             "trajectory": [e for e in st.session_state.trajectory if isinstance(e, dict)],
             "guardrail_passed": st.session_state.guardrail_passed,
             "human_approved": st.session_state.human_approved,

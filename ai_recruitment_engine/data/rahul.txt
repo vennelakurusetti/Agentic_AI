@@ -1,9 +1,36 @@
-Name: Rahul Verma
-Education: Bachelor of Engineering in Electronics, Pune University
-Experience: 4 years
-Skills: Java, C++, Spring Boot, MySQL, Azure, REST APIs
-Experience Details:
-- Software Developer at Infosys (4 years): Developed REST APIs using Java and Spring Boot
-- Worked on Azure cloud migration projects
+Name
+Rahul Verma
 
-Note: No experience with Python, JavaScript, or React
+Education
+B.Tech Information Technology
+CGPA: 8.2
+
+Skills
+Python
+Java
+Spring Boot
+REST APIs
+Docker
+Git
+CI/CD
+SQL
+
+Projects
+Hospital Management System
+Developed backend REST APIs using Java Spring Boot.
+
+Task Automation
+Created Python automation scripts for file processing.
+
+Experience
+Software Development Intern
+Worked on backend APIs.
+
+Communication
+Average presentation skills.
+
+No experience with
+LangChain
+RAG
+Vector Databases
+Prompt Engineering

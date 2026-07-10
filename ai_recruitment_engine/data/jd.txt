@@ -1,24 +1,34 @@
-Job Title: Senior Software Engineer
-
-We are looking for a Senior Software Engineer to join our team. The ideal candidate will have strong experience in Python, JavaScript, and cloud technologies.
-
-Required Qualifications:
-- Bachelor's degree in Computer Science or related field
-- 5+ years of experience in software development
-- Strong proficiency in Python
-- Experience with JavaScript frameworks (React preferred)
-- Experience with cloud platforms (AWS or Azure)
-- Excellent communication skills
-
-Preferred Qualifications:
-- Experience with Docker and Kubernetes
-- Knowledge of CI/CD pipelines
-- Experience with microservices architecture
-- Familiarity with Agile methodologies
-
-Responsibilities:
-- Design and implement scalable software solutions
-- Collaborate with cross-functional teams
-- Mentor junior developers
-- Participate in code reviews
-- Write unit and integration tests
+TechVest Global
+Position: Junior AI Engineer
+Location: Hyderabad (Hybrid)
+About the Role
+TechVest Global is looking for a Junior AI Engineer to build intelligent AI-powered applications
+using modern LLM frameworks. You will work with the AI Engineering team to build
+Retrieval-Augmented Generation (RAG) systems, AI agents, and production-ready ML
+applications.
+Required Skills
+• Strong Python programming
+• Experience with LangChain
+• Experience building RAG applications
+• Familiarity with Vector Databases (FAISS, ChromaDB, Pinecone, etc.)
+• Understanding of Prompt Engineering
+• Good Communication Skills
+• Problem Solving
+• Git and GitHub
+Preferred Skills
+• LangGraph
+• Docker
+• CI/CD
+• FastAPI
+• Streamlit
+Education
+Bachelor's degree in Computer Science, Information Technology, AI & ML, or related field.
+Experience
+0-2 years (Freshers with strong projects are encouraged.)
+Responsibilities
+• Develop AI-powered applications
+• Build and improve RAG pipelines
+• Work with vector databases
+• Collaborate with engineering teams
+• Deploy AI applications
+• Write clean and maintainable Python code
