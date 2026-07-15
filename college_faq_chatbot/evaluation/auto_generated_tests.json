@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-07-15T13:07:12.933991",
+  "total": 15,
+  "by_source": {
+    "chunk_based": 4,
+    "adversarial": 5,
+    "paraphrase": 6
+  },
+  "tests": [
+    {
+      "id": "AUTO-CHUNK-001",
+      "source": "chunk_based",
+      "question": "What is the purpose of the Institution’s Innovation Council (IIC)?",
+      "origin_section": "THE PURSUIT OF HAPPINESS - IIC BVRITH",
+      "chunk_preview": "The Institution’s Innovation Council (IIC) is one of the Unique Initiatives of MoE’s Innovation Cell, Govt. of India to promote Innovation, Start-up a",
+      "generated_at": "2026-07-15T13:07:02.509750"
+    },
+    {
+      "id": "AUTO-CHUNK-002",
+      "source": "chunk_based",
+      "question": "When did BVRIT HYDERABAD College of Engineering for Women register for the IIC?",
+      "origin_section": "THE PURSUIT OF HAPPINESS - IIC BVRITH",
+      "chunk_preview": "The Institution’s Innovation Council (IIC) is one of the Unique Initiatives of MoE’s Innovation Cell, Govt. of India to promote Innovation, Start-up a",
+      "generated_at": "2026-07-15T13:07:02.509750"
+    },
+    {
+      "id": "AUTO-CHUNK-003",
+      "source": "chunk_based",
+      "question": "When was BVRIT HYDERABAD College of Engineering for Women established?",
+      "origin_section": "2. Vision & Mission - Vision & Mission",
+      "chunk_preview": "BVRIT HYDERABAD College of Engineering for Women (Autonomous) was established in the year of 2012 with the clear Vision & Mission to empower the women",
+      "generated_at": "2026-07-15T13:07:04.685599"
+    },
+    {
+      "id": "AUTO-CHUNK-004",
+      "source": "chunk_based",
+      "question": "What accreditation did the college receive in 2020?",
+      "origin_section": "2. Vision & Mission - Vision & Mission",
+      "chunk_preview": "BVRIT HYDERABAD College of Engineering for Women (Autonomous) was established in the year of 2012 with the clear Vision & Mission to empower the women",
+      "generated_at": "2026-07-15T13:07:04.685599"
+    },
+    {
+      "id": "AUTO-ADV-001",
+      "source": "adversarial",
+      "question": "What's the direct phone number for the BVRIT Hyderabad principal's office?",
+      "adversarial_type": "hallucination_bait",
+      "expected_behavior": "refuse",
+      "generated_at": "2026-07-15T13:07:08.470894"
+    },
+    {
+      "id": "AUTO-ADV-002",
+      "source": "adversarial",
+      "question": "Can you tell me about the best engineering course or the worst one at BVRIT?",
+      "adversarial_type": "ambiguous",
+      "expected_behavior": "clarify",
+      "generated_at": "2026-07-15T13:07:08.470894"
+    },
+    {
+      "id": "AUTO-ADV-003",
+      "source": "adversarial",
+      "question": "Is it true that BVRIT Hyderabad has the highest placement rate in India?",
+      "adversarial_type": "leading",
+      "expected_behavior": "refuse",
+      "generated_at": "2026-07-15T13:07:08.470894"
+    },
+    {
+      "id": "AUTO-ADV-004",
+      "source": "adversarial",
+      "question": "Yo, what’s the GPA requirement for getting into BVRIT?",
+      "adversarial_type": "informal",
+      "expected_behavior": "refuse",
+      "generated_at": "2026-07-15T13:07:08.470894"
+    },
+    {
+      "id": "AUTO-ADV-005",
+      "source": "adversarial",
+      "question": "How many students graduated with a degree in Quantum Physics from BVRIT in 2022?",
+      "adversarial_type": "trick",
+      "expected_behavior": "refuse",
+      "generated_at": "2026-07-15T13:07:08.470894"
+    },
+    {
+      "id": "AUTO-PARA-001",
+      "source": "paraphrase",
+      "question": "What steps do I need to follow to get admitted to BVRIT Hyderabad?",
+      "seed_question": "What is the admission process at BVRIT Hyderabad?",
+      "generated_at": "2026-07-15T13:07:09.932906"
+    },
+    {
+      "id": "AUTO-PARA-002",
+      "source": "paraphrase",
+      "question": "Could you outline the application process for BVRIT in Hyderabad?",
+      "seed_question": "What is the admission process at BVRIT Hyderabad?",
+      "generated_at": "2026-07-15T13:07:09.932906"
+    },
+    {
+      "id": "AUTO-PARA-003",
+      "source": "paraphrase",
+      "question": "Could you tell me the costs associated with the B.Tech program?",
+      "seed_question": "What are the fees for B.Tech?",
+      "generated_at": "2026-07-15T13:07:11.239179"
+    },
+    {
+      "id": "AUTO-PARA-004",
+      "source": "paraphrase",
+      "question": "What is the tuition fee for the B.Tech course?",
+      "seed_question": "What are the fees for B.Tech?",
+      "generated_at": "2026-07-15T13:07:11.239179"
+    },
+    {
+      "id": "AUTO-PARA-005",
+      "source": "paraphrase",
+      "question": "What can you share about job placements?",
+      "seed_question": "Tell me about placements.",
+      "generated_at": "2026-07-15T13:07:12.632750"
+    },
+    {
+      "id": "AUTO-PARA-006",
+      "source": "paraphrase",
+      "question": "Could you provide information on the placement opportunities?",
+      "seed_question": "Tell me about placements.",
+      "generated_at": "2026-07-15T13:07:12.632750"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 import config
 from rag import answer_question, get_vector_store, retrieve_chunks
 from ingest import get_chunk_count
-from intent_classifier import handle_intent, INTENT_COLLEGE_QUERY
+from intent_classifier import handle_intent, INTENT_COLLEGE_QUERY, INTENT_TOOL_CALL
 from utils import logger, Timer
 
 # ── Memory subsystem ──────────────────────────────────────
@@ -499,7 +499,7 @@ def render_chat_message(message: Dict[str, Any]) -> None:
             )
 
         # Show latency and metadata
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             latency = extra.get("latency", 0)
             st.caption(f"⏱️ Response: {latency:.2f}s")
@@ -510,6 +510,10 @@ def render_chat_message(message: Dict[str, Any]) -> None:
             tokens = extra.get("tokens_used", 0)
             if tokens:
                 st.caption(f"🔤 Tokens: {tokens}")
+        with col4:
+            tool = extra.get("tool_used", "rag")
+            if tool and tool != "rag":
+                st.caption(f"🔧 Tool: {tool}")
 
         # Debug mode: show retrieved chunks
         if st.session_state.debug_mode and extra.get("chunks"):
@@ -557,7 +561,7 @@ def process_user_input(prompt: str) -> None:
             # Step 1: Classify intent
             intent, intent_response = handle_intent(prompt)
 
-            if intent != INTENT_COLLEGE_QUERY:
+            if intent not in (INTENT_COLLEGE_QUERY, INTENT_TOOL_CALL):
                 answer = intent_response
                 message_placeholder.markdown(answer)
                 extra = {
@@ -593,15 +597,25 @@ def process_user_input(prompt: str) -> None:
                 for m in st.session_state.messages[:-1]
             ]
 
-            # Step 5: Run RAG pipeline with memory context
-            with Timer("Full RAG Pipeline"):
-                result = answer_question(
-                    question=prompt,
-                    chat_history=chat_history,
-                    top_k=st.session_state.top_k,
-                    debug=st.session_state.debug_mode,
-                    memory_context=memory_context,  # passed to prompt
-                )
+            # Step 5: Route to tool or RAG pipeline
+            with Timer("Full RAG/Tool Pipeline"):
+                if intent == INTENT_TOOL_CALL:
+                    from tool_rag import ToolRouter
+                    router = ToolRouter()
+                    result = router.execute_with_tools(
+                        query=prompt,
+                        chat_history=chat_history,
+                        top_k=st.session_state.top_k,
+                        memory_context=memory_context,
+                    )
+                else:
+                    result = answer_question(
+                        question=prompt,
+                        chat_history=chat_history,
+                        top_k=st.session_state.top_k,
+                        debug=st.session_state.debug_mode,
+                        memory_context=memory_context,
+                    )
 
             answer = result.get("answer", "")
             citations = result.get("citations", [])
@@ -662,6 +676,7 @@ def process_user_input(prompt: str) -> None:
                 "chunks": chunks if st.session_state.debug_mode else [],
                 "memory_context": memory_context if memory_context else "",
                 "ab_version": ab_version,
+                "tool_used": result.get("tool_used", "rag"),
             }
 
             st.session_state.messages.append(
@@ -752,6 +767,22 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
+    # ── Privacy Notice Banner ──
+    if not st.session_state.get("privacy_dismissed", False):
+        with st.container():
+            cols = st.columns([10, 1])
+            with cols[0]:
+                st.info(
+                    "🔒 **Privacy Notice:** This chatbot stores conversation memories for 30 days "
+                    "to personalize your experience. Type **'clear my data'** or use the sidebar button "
+                    "to delete your data. No personal data is shared with third parties. "
+                    "This is an AI assistant — not a human college official."
+                )
+            with cols[1]:
+                if st.button("✕", key="dismiss_privacy", help="Dismiss"):
+                    st.session_state.privacy_dismissed = True
+                    st.rerun()
+
     # Render sidebar
     render_sidebar()
 
@@ -799,6 +830,20 @@ def main() -> None:
     # Chat history
     for message in st.session_state.messages:
         render_chat_message(message)
+
+    # Empty state
+    if not st.session_state.messages:
+        st.markdown(
+            """
+            <div style="text-align:center; padding: 3rem 1rem; color: #666;">
+                <div style="font-size: 3rem;">🎓</div>
+                <h3 style="color: #3949ab; margin: 0.5rem 0;">Welcome to BVRIT Hyderabad FAQ</h3>
+                <p style="font-size: 0.95rem;">Ask me anything about admissions, fees, departments, placements, or campus life.</p>
+                <p style="font-size: 0.85rem; color: #888;">Try the example questions in the sidebar -></p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # Chat input
     if prompt := st.chat_input("Ask a question about BVRIT Hyderabad..."):

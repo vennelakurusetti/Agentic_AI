@@ -20,7 +20,7 @@ MAX_INPUT_LENGTH = 2000    # characters
 def check_latency_alert(latency: float) -> Optional[str]:
     """Alert if latency exceeds threshold."""
     if latency > MAX_LATENCY:
-        msg = f"⚠️ Latency alert: {latency:.2f}s exceeds {MAX_LATENCY}s threshold"
+        msg = f"[WARN] Latency alert: {latency:.2f}s exceeds {MAX_LATENCY}s threshold"
         logger.warning(msg)
         return msg
     return None
@@ -29,7 +29,7 @@ def check_latency_alert(latency: float) -> Optional[str]:
 def check_cost_alert(cost: float) -> Optional[str]:
     """Alert if cost per query exceeds threshold."""
     if cost > MAX_COST_PER_QUERY:
-        msg = f"⚠️ Cost alert: ${cost:.6f} exceeds ${MAX_COST_PER_QUERY} threshold"
+        msg = f"[WARN] Cost alert: ${cost:.6f} exceeds ${MAX_COST_PER_QUERY} threshold"
         logger.warning(msg)
         return msg
     return None
@@ -43,7 +43,7 @@ def check_error_rate_alert() -> Optional[str]:
     error_count = sum(1 for e in logs if not e.get("success", True))
     error_rate = (error_count / len(logs)) * 100
     if error_rate > MAX_ERROR_RATE:
-        msg = f"⚠️ Error rate alert: {error_rate:.1f}% exceeds {MAX_ERROR_RATE}% threshold"
+        msg = f"[WARN] Error rate alert: {error_rate:.1f}% exceeds {MAX_ERROR_RATE}% threshold"
         logger.warning(msg)
         return msg
     return None

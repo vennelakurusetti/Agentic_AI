@@ -1,49 +1,76 @@
-# 🎓 College FAQ Chatbot
+# 🎓 College FAQ Chatbot — BVRIT Hyderabad
 
 A production-quality **Retrieval-Augmented Generation (RAG)** chatbot for BVRIT Hyderabad College of Engineering for Women. Built with LangChain, ChromaDB, Streamlit, and OpenRouter.
 
 ## ✨ Features
 
-- **📄 Smart Document Parsing** — Uses `python-docx` to parse DOCX preserving heading styles (Heading 1, Heading 2) as section metadata — no more "Unknown Section"
-- **🔍 Intelligent Retrieval** — Top-K configurable (default 8), metadata filtering, relevance scoring, thin-chunk filtering, debug mode
-- **🤖 LLM-Powered Answers** — GPT-4o Mini via OpenRouter, strictly grounded in retrieved context with section citations
-- **💬 Beautiful Streamlit UI** — Modern gradient interface, streaming responses, citation badges, latency display
-- **🧠 Conversation Memory** — Follow-up question support via query rewriting
-- **📊 Evaluation** — Automated test pipeline with answer rate metrics, per-question breakdown, and recommendations
-- **🔄 Auto-Rebuild** — Automatically detects when vector store needs rebuilding (e.g. after metadata format changes)
+- **📄 Smart Document Parsing** — `python-docx` parses DOCX preserving Heading 1/2 styles as section metadata
+- **🔍 Intelligent Retrieval** — Top-K configurable (default 8), relevance scoring, thin-chunk filtering, debug mode
+- **🤖 LLM-Powered Answers** — GPT-4o Mini via OpenRouter, grounded in retrieved context with section citations
+- **🔧 Function Calling Tools** — `fee_calculator`, `date_checker`, `percentage_calculator` with prompt injection protection
+- **💬 Multi-page Streamlit UI** — Chat, Logs, Evaluation, and Memory pages
+- **🧠 Persistent Memory** — ChromaDB-backed user memory with 30-day retention and "clear my data" command
+- **📊 Observability** — JSONL logging, latency/cost/token tracking, P95, anomaly detection, A/B prompt testing
+- **🧪 Evaluation Suite** — RAGAS, LLM Judge, Functional Tests, Security Tests, Auto Test Generator
+- **🏛️ Governance** — DeepEval, Promptfoo, Giskard-style tests; safety scanner, fairness tests, governance report
+- **🔒 Security** — Prompt injection defense, PII protection, input length validation, safety scanning
 
 ## 🏗️ Project Structure
 
 ```
 college_faq_chatbot/
-├── app.py              # Streamlit UI (main chat interface)
-├── ingest.py           # Document ingestion with python-docx heading detection
-├── rag.py              # Retrieval-Augmented Generation pipeline
-├── prompts.py          # System prompt templates
-├── evaluator.py        # Test case generation and evaluation pipeline
-├── config.py           # Central configuration
-├── utils.py            # Logging and utility functions
-├── debug_retrieval.py  # Debugging tool for retrieval issues
-├── requirements.txt    # Python dependencies
-├── .env                # API keys and model configuration
-├── .env.example        # Environment template
-├── run.bat             # Helper batch script for Windows
-├── README.md           # This file
+├── app.py                    # Main chat UI (Streamlit)
+├── rag.py                    # RAG pipeline (retrieve + generate)
+├── ingest.py                 # Document ingestion → ChromaDB
+├── tool_rag.py               # Tool router (fee/date/percent)
+├── tools.py                  # Three function-calling tools
+├── intent_classifier.py      # Intent routing (greeting/tool/RAG)
+├── prompts.py                # System prompt templates
+├── config.py                 # Central configuration
+├── utils.py                  # Logger + Timer utilities
+├── requirements.txt          # Python dependencies
+├── .env                      # API keys (not committed)
+├── .env.example              # Template
+│
+├── pages/                    # Streamlit multi-page navigation
+│   ├── 1_📊_Logs.py          # Observability dashboard
+│   ├── 2_🧪_Evaluation.py    # Evaluation dashboard
+│   └── 3_🧠_Memory.py        # Memory browser
+│
+├── memory/                   # Persistent user memory subsystem
+│   ├── memory_manager.py     # High-level orchestrator
+│   ├── memory_store.py       # ChromaDB CRUD
+│   ├── memory_retriever.py   # Similarity search
+│   ├── memory_extractor.py   # Extract facts from turns
+│   └── memory_bootstrapper.py
+│
+├── observability/            # LLM call monitoring
+│   ├── llm_logger.py         # JSONL logging wrapper
+│   ├── session_stats.py      # P95 latency, cost, tokens
+│   ├── threshold_alerts.py   # Latency/cost/error alerts
+│   ├── log_analyzer.py       # Anomaly detection
+│   └── ab_testing.py         # A/B prompt version testing
+│
+├── evaluation/               # Automated evaluation suite
+│   ├── ragas_eval.py         # RAGAS metrics (LLM-as-judge)
+│   ├── llm_judge.py          # 5-criterion LLM judge
+│   ├── functional_tests.py   # 20 functional test cases
+│   ├── security_tests.py     # 32 security/adversarial tests
+│   └── auto_test_generator.py # AI-generated test cases
+│
+├── governance/               # AI governance tools
+│   ├── report.py             # Master governance report
+│   ├── deepeval_tests.py     # 7 DeepEval-style metrics
+│   ├── promptfoo_tests.py    # 15 Promptfoo-style assertions
+│   ├── giskard_tests.py      # 15 Giskard vulnerability scans
+│   ├── safety_scanner.py     # Runtime hallucination/injection/bias
+│   └── fairness_tests.py     # Fairness across user profiles
 │
 ├── data/
-│   └── knowledge_base.docx   # Source document (BVRIT Hyderabad knowledge base)
+│   └── knowledge_base.docx   # BVRIT Hyderabad knowledge base
 │
-├── knowledge_builder/  # Scripts used to scrape bvrithyderabad.edu.in and build the base knowledge document
-│   ├── scraper.py
-│   ├── clean_data.py
-│   └── create_doc.py
-│
-├── chroma_db/          # Persistent vector database (created by ingest.py)
-│
-├── test_cases/         # Generated test cases for evaluation
-│
-└── evaluation/         # Evaluation reports and metrics
-    └── report.json     # Evaluation report
+├── chroma_db/                # Knowledge vector store (auto-created)
+└── memory_db/                # User memory vector store (auto-created)
 ```
 
 ## 🚀 Quick Start
@@ -51,11 +78,10 @@ college_faq_chatbot/
 ### 1. Install Dependencies
 
 ```bash
-cd college_faq_chatbot
 pip install -r requirements.txt
 ```
 
-### 2. Configure API Keys
+### 2. Configure API Key
 
 Copy `.env.example` to `.env` and add your OpenRouter API key:
 
@@ -63,197 +89,81 @@ Copy `.env.example` to `.env` and add your OpenRouter API key:
 OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
-Get your API key from [OpenRouter](https://openrouter.ai/).
+Get your key at [openrouter.ai](https://openrouter.ai/).
 
 ### 3. Ingest the Knowledge Base
-
-The first run will auto-detect that the vector store needs building:
 
 ```bash
 python ingest.py
 ```
 
-Note: `data/knowledge_base.docx` was generated by scraping the official site https://bvrithyderabad.edu.in using the included `knowledge_builder` scripts. To recreate the source document manually:
-
-```bash
-cd knowledge_builder
-pip install -r requirements.txt
-python create_doc.py
-```
-
-This will:
-- Load `data/knowledge_base.docx` using `python-docx` (paragraph-by-paragraph)
-- Detect Heading 1 and Heading 2 styles to extract section names
-- Group paragraphs by section and split into chunks (500 chars, 50 overlap)
-- Generate embeddings via `text-embedding-3-small`
-- Store vectors in persistent ChromaDB with section metadata
-
-To force re-ingestion after updating the document:
-
+Force rebuild after updating the DOCX:
 ```bash
 python ingest.py --force
 ```
 
-### 4. Start the Chatbot
+### 4. Run the App
 
 ```bash
 streamlit run app.py
 ```
 
-Open your browser to `http://localhost:8501`.
+Open **http://localhost:8501** — sidebar navigation gives you 4 pages:
+- **🎓 Chat** — main FAQ interface
+- **📊 Logs** — observability dashboard
+- **🧪 Evaluation** — run and view all evaluations
+- **🧠 Memory** — browse and manage user memories
 
-If the default `pip`/`streamlit` commands don't work due to a broken virtual environment, use the system Python directly:
+If the default `streamlit` command doesn't work (broken venv), use:
 
 ```bash
 C:\Users\madha\AppData\Local\Programs\Python\Python312\python.exe -m streamlit run app.py
 ```
 
-## 🎯 Usage
+## 🔧 Tools
 
-### Chat Interface
-
-- Type any question about BVRIT Hyderabad in the chat input
-- Click example questions in the sidebar
-- View citations showing the exact section name from the knowledge base
-- Toggle Debug Mode to see retrieved chunks with relevance scores
-
-### Example Questions
-
-- "What is the admission process?"
-- "What departments are available?"
-- "Tell me about placements"
-- "What campus facilities are available?"
-- "How is the research at the college?"
-- "What are the TS EAMCET cutoff ranks?"
-- "Tell me about the CSE department"
-- "What student clubs are there?"
-
-### Sidebar Controls
-
-- **Document Status** — Shows if `knowledge_base.docx` is loaded
-- **Vector Store Status** — Shows chunk count and database readiness
-- **Chunking Settings** — Displays chunk size, overlap, and total chunks
-- **Top-K Slider** — Adjust number of retrieved chunks (1-10, default 8)
-- **Debug Mode** — Toggle to see retrieved chunks in responses
-- **Example Questions** — One-click question buttons
+| Tool | Trigger | Example |
+|------|---------|---------|
+| `fee_calculator` | fee, cost, tuition | "What is the CSE fee?" |
+| `date_checker` | deadline, when is, dates | "When is EAMCET 2026?" |
+| `percentage_calculator` | X out of Y, eligible | "I got 450 out of 600" |
 
 ## 📊 Evaluation
 
-### Run Evaluation
+From the **🧪 Evaluation** page or CLI:
 
 ```bash
-python evaluator.py
+python evaluation/ragas_eval.py        # RAGAS metrics
+python evaluation/llm_judge.py         # LLM judge (5 criteria)
+python evaluation/functional_tests.py  # 20 functional tests
+python evaluation/security_tests.py    # 32 security tests
+python governance/report.py            # Full governance report
 ```
 
-This will:
-1. Test 15 predefined questions covering all knowledge base sections
-2. Run the RAG pipeline on each question
-3. Calculate answer rate, average chunks retrieved, and per-question breakdown
-4. Save results to `evaluation/report.json`
+## 🏛️ Governance Score
 
-To specify custom number of questions:
+The governance report (`governance/governance_report.json`) produces a 0–100 score across:
+- DeepEval metrics (25 pts)
+- Promptfoo assertion tests (25 pts)
+- Giskard vulnerability scan (25 pts)
+- Prompt injection detection (25 pts)
 
-```bash
-python evaluator.py --questions 20
-```
+## 🔒 Security & Privacy
 
-## 🧠 Architecture
+- Input length capped at 2000 characters
+- Prompt injection keyword detection on all tool inputs
+- Safety scanner runs on every response (hallucination + bias + toxicity)
+- User memories expire after 30 days; "clear my data" deletes immediately
+- DPDP compliance: privacy notice shown on first load
 
-```
-User Question
-    │
-    ▼
-Query Rewriting (with conversation history)
-    │
-    ▼
-Embedding Generation (text-embedding-3-small)
-    │
-    ▼
-ChromaDB Similarity Search (Top-K = 8)
-    │
-    ▼
-Thin Chunk Filtering (skip < 80 chars)
-    │
-    ▼
-Context Assembly (chunks + section metadata)
-    │
-    ▼
-LLM Generation (GPT-4o Mini via OpenRouter)
-    │
-    ▼
-Answer + Section Citations
-```
+## ⚙️ Configuration (`config.py`)
 
-## 📄 Document Parsing
-
-The `ingest.py` uses `python-docx` to read the DOCX file paragraph by paragraph:
-
-1. **Heading 1** → Sets the current section (e.g. "6. Admissions")
-2. **Heading 2** → Creates sub-section (e.g. "6. Admissions - Admission Process")
-3. **Numbered headings** → Auto-detected as section boundaries
-4. **ALL CAPS lines** → Detected as section headings
-5. **Regular paragraphs** → Grouped under the current section heading
-6. **Grouped by section** → Each section becomes a document with metadata
-7. **Split into chunks** → Each chunk inherits the section metadata
-
-This ensures no "Unknown Section" appears in citations.
-
-## 🔧 Configuration
-
-All settings in `config.py`:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `CHUNK_SIZE` | 500 | Characters per chunk |
-| `CHUNK_OVERLAP` | 50 | Overlap between chunks |
-| `TOP_K` | 8 | Number of chunks to retrieve |
-| `EMBEDDING_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
-| `LLM_MODEL` | `openai/gpt-4o-mini` | OpenRouter LLM model |
-| `LLM_TEMPERATURE` | 0.0 | LLM temperature (deterministic) |
-| `LLM_MAX_TOKENS` | 1024 | Maximum response tokens |
-
-## 🛡️ Quality
-
-- **Type Hints** — All functions use Python type hints
-- **Docstrings** — Every module and function has docstrings
-- **Error Handling** — Graceful fallbacks for API failures, missing files, JSON parsing errors
-- **Logging** — Comprehensive logging with timestamps and levels
-- **No Hardcoded Keys** — All credentials via `.env`
-- **No "Unknown Section"** — All chunks carry proper section metadata from DOCX headings
-
-## 🐛 Debugging Retrieval Issues
-
-If the chatbot can't answer a question you expect it to:
-
-1. Run the debug script:
-   ```bash
-   python debug_retrieval.py
-   ```
-2. This shows what sections exist in the database
-3. Tests retrieval for specific queries with relevance scores
-4. Shows full content of problematic sections
-5. Thin chunks (< 80 chars) are automatically filtered out during generation
-
-## 📋 Requirements
-
-```
-langchain>=0.3.0
-langchain-community>=0.3.0
-langchain-chroma>=0.2.0
-langchain-openai>=0.3.0
-chromadb>=0.6.0
-streamlit>=1.28.0
-python-dotenv>=1.0.0
-pandas>=2.0.0
-tiktoken>=0.9.0
-docx2txt>=0.9
-python-docx>=1.0.0
-```
-
-## 📄 License
-
-MIT
-
-## Specification
-
-See the project specification: [spec.md](spec.md)
+| Setting | Default |
+|---------|---------|
+| `CHUNK_SIZE` | 500 chars |
+| `CHUNK_OVERLAP` | 50 chars |
+| `TOP_K` | 8 chunks |
+| `LLM_MODEL` | `openai/gpt-4o-mini` |
+| `EMBEDDING_MODEL` | `text-embedding-3-small` |
+| `MEMORY_CLEANUP_DAYS` | 30 days |
+| `MAX_INPUT_LENGTH` | 2000 chars |

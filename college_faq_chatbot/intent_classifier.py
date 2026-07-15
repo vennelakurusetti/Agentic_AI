@@ -12,6 +12,7 @@ INTENT_SMALL_TALK = "small_talk"
 INTENT_ABUSIVE = "abusive"
 INTENT_UNRELATED = "unrelated"
 INTENT_COLLEGE_QUERY = "college_query"
+INTENT_TOOL_CALL = "tool_call"
 
 # Greeting patterns
 GREETING_PATTERNS = [
@@ -123,6 +124,18 @@ ABUSIVE_RESPONSE = "I'm here to help with questions about BVRIT Hyderabad. Pleas
 
 UNRELATED_RESPONSE = "I can only answer questions related to BVRIT Hyderabad based on the uploaded knowledge base. 🎓 Please ask me something about the college — admissions, placements, departments, facilities, or anything else!"
 
+# Tool call detection patterns
+TOOL_CALL_PATTERNS = [
+    # Fee calculator triggers
+    r"\b(fee|fees|fee\s*structure|tuition|cost|how\s*much|annual\s*fees?|total\s*fees?|semester\s*fees?)\b",
+    # Date checker triggers
+    r"\b(last\s*date|due\s*date|when\s*is\s*(the\s*)?(admission|exam|eamcet|eapcet)|deadline|application\s*date|closing\s*date|important\s*dates?)\b",
+    # Percentage calculator triggers
+    r"\b(\d+\s*(out\s*of|/)\s*\d+|calculate\s*(my\s*)?percentage|what\s*is\s*my\s*percentage|am\s*i\s*eligible|eligib(le|ility)\b)",
+]
+
+TOOL_CALL_RESPONSE = ""  # Tool call intent routes to tool_rag pipeline, no static response
+
 
 def classify_intent(text: str) -> str:
     """Classify the user's input into an intent category."""
@@ -142,6 +155,11 @@ def classify_intent(text: str) -> str:
     for pattern in SMALL_TALK_PATTERNS:
         if re.match(pattern, text_lower):
             return INTENT_SMALL_TALK
+
+    # Check for tool call intent (fee, date, percentage queries)
+    for pattern in TOOL_CALL_PATTERNS:
+        if re.search(pattern, text_lower):
+            return INTENT_TOOL_CALL
 
     # Check if it's a college-related query (must check before unrelated)
     for pattern in COLLEGE_KEYWORDS:
@@ -200,5 +218,8 @@ def handle_intent(text: str) -> Tuple[str, str]:
         return intent, ABUSIVE_RESPONSE
     elif intent == INTENT_UNRELATED:
         return intent, UNRELATED_RESPONSE
+    elif intent == INTENT_TOOL_CALL:
+        # Tool call intent — return empty response, let app.py route to ToolRouter
+        return intent, ""
     else:
         return intent, ""

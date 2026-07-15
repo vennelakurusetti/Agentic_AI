@@ -121,7 +121,7 @@ def bootstrap_memories_from_history(
             existing = find_memory_by_content(user_id, memory_type, content[:30])
 
             if existing:
-                # Check if content is different → update
+                # Check if content is different -- update
                 existing_content = existing.get("page_content", "")
                 if existing_content.lower() != content.lower():
                     update_memory(

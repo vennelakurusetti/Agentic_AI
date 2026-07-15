@@ -101,11 +101,11 @@ def format_memories_for_prompt(memories: List[Dict[str, Any]]) -> str:
         content = m.get("content", "")
         imp = m.get("importance", 0.0)
         if imp >= 0.8:
-            star = "⭐"
+            marker = "[HIGH]"
         elif imp >= 0.5:
-            star = "📌"
+            marker = "[MED]"
         else:
-            star = "ℹ️"
-        lines.append(f"{star} {mtype}: {content}")
+            marker = "[LOW]"
+        lines.append(f"{marker} {mtype}: {content}")
 
     return "\n".join(lines)

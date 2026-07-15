@@ -49,22 +49,22 @@ def render_stats_html(stats: Dict[str, Any]) -> str:
     return f"""
     <div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:0.6rem;margin-bottom:0.5rem;font-size:0.8rem;">
         <div style="display:flex;justify-content:space-between;">
-            <span>📊 Total Queries</span><span><strong>{stats['total_queries']}</strong></span>
+            <span>Queries</span><span><strong>{stats['total_queries']}</strong></span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>⏱️ Avg Latency</span><span><strong>{stats['avg_latency']}s</strong></span>
+            <span>Avg Latency</span><span><strong>{stats['avg_latency']}s</strong></span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>📈 P95 Latency</span><span><strong>{stats['p95_latency']}s</strong></span>
+            <span>P95 Latency</span><span><strong>{stats['p95_latency']}s</strong></span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>💰 Total Cost</span><span><strong>${stats['total_cost']:.6f}</strong></span>
+            <span>Total Cost</span><span><strong>${stats['total_cost']:.6f}</strong></span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>🔤 Total Tokens</span><span><strong>{stats['total_tokens']}</strong></span>
+            <span>Total Tokens</span><span><strong>{stats['total_tokens']}</strong></span>
         </div>
         <div style="display:flex;justify-content:space-between;">
-            <span>❌ Errors</span><span><strong>{stats['error_count']} ({stats['error_rate']}%)</strong></span>
+            <span>Errors</span><span><strong>{stats['error_count']} ({stats['error_rate']}%)</strong></span>
         </div>
     </div>
     """

@@ -1,0 +1,435 @@
+{
+  "timestamp": "2026-07-15T18:26:13.986819",
+  "overall_score": 94.9,
+  "pass_rate_pct": 100.0,
+  "pass_count": 8,
+  "warn_count": 0,
+  "fail_count": 0,
+  "weakest_dimension": "RAGAS Summary",
+  "recommended_fixes": [],
+  "ragas": {
+    "status": "pass",
+    "scores": {
+      "faithfulness": 0.85,
+      "answer_relevancy": 1.0,
+      "context_precision": 0.575,
+      "context_recall": 0.8,
+      "overall": 0.8063
+    },
+    "overall": 0.8063,
+    "label": "RAGAS Evaluation",
+    "detail": "F=0.850 R=1.000 P=0.575 Re=0.800",
+    "ragas_report": {
+      "evaluation_type": "RAGAS-style",
+      "timestamp": "2026-07-15T18:19:32.722829",
+      "num_test_cases": 10,
+      "num_evaluated": 10,
+      "num_errors": 0,
+      "aggregate_scores": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 1.0,
+        "context_precision": 0.575,
+        "context_recall": 0.8,
+        "overall": 0.8063
+      },
+      "samples": [
+        {
+          "sample_id": "sample_1",
+          "question": "What is the admission process at BVRIT Hyderabad?",
+          "answer_preview": "The admission process at BVRIT Hyderabad College of Engineering for Women involves filling Category – A Seats, which will be managed by the Convener of TSEAMCET Admissions. The application procedure i",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:17:16.165580",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "The answer accurately reflects the information provided in the contexts regarding the admission process at BVRIT Hyderabad, specifically mentioning the filling of Category – A Seats by the Convener of TSEAMCET Admissions and the straightforward application procedure."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly addresses the admission process at BVRIT Hyderabad by explaining the management of Category – A Seats and the application procedure."
+          },
+          "context_precision": {
+            "score": 0.25,
+            "reason": "Only Chunk 1 is relevant to the admission process at BVRIT Hyderabad, while the other chunks provide information about the department, which is not directly related to the admission process."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All key information from the reference answer is present in the retrieved chunks, including the mention of Category – A Seats, the Convener of TSEAMCET Admissions, and the straightforward application procedure."
+          },
+          "aggregate_score": 0.8125,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.25,
+            "context_recall": 1.0
+          }
+        },
+        {
+          "sample_id": "sample_2",
+          "question": "What departments are available?",
+          "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers several departments, including:\n\n1. **Information Technology** - Focuses on comprehensive learning to benefit students in the IT industry and so",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:17:29.997139",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "All claims in the answer about the departments offered at BVRIT Hyderabad College of Engineering for Women are supported by the provided contexts."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly lists and describes the departments available at BVRIT Hyderabad College of Engineering for Women, fully addressing the question."
+          },
+          "context_precision": {
+            "score": 0.0,
+            "reason": "None of the retrieved chunks directly answer the question about the available departments; they provide general information about a specific department instead."
+          },
+          "context_recall": {
+            "score": 0.0,
+            "reason": "None of the specific departments mentioned in the reference answer are present in the retrieved contexts."
+          },
+          "aggregate_score": 0.5,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.0,
+            "context_recall": 0.0
+          }
+        },
+        {
+          "sample_id": "sample_3",
+          "question": "Tell me about placements at BVRIT Hyderabad.",
+          "answer_preview": "BVRIT Hyderabad College of Engineering for Women has a robust placement system facilitated by its central Training and Placement Cell. This cell supports students not only from BVRIT Hyderabad but als",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:17:43.014710",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "The answer accurately reflects the information provided in the contexts regarding the placement system, skill development focus, and the role of the Training and Placement Cell at BVRIT Hyderabad."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer provides a comprehensive overview of the placement system at BVRIT Hyderabad, including the role of the Training and Placement Cell, the success of students in placements, and the emphasis on skill development."
+          },
+          "context_precision": {
+            "score": 0.75,
+            "reason": "Chunks 1, 2, 3, and 4 are relevant to the question about placements at BVRIT Hyderabad, while chunks 5, 6, 7, and 8 are not relevant. Out of 8 total chunks, 6 are relevant."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All key information from the reference answer about placements, the role of the Training and Placement Cell, and the emphasis on skill development is present in the retrieved contexts."
+          },
+          "aggregate_score": 0.9375,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.75,
+            "context_recall": 1.0
+          }
+        },
+        {
+          "sample_id": "sample_4",
+          "question": "What are the campus facilities?",
+          "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers a variety of campus facilities, including:\n\n1. **Hostel Facilities**: The college has 4 blocks of hostels with over 150 rooms, accommodating mor",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:18:01.095309",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "All claims in the answer are supported by the provided contexts."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly and completely addresses the question by listing and describing various campus facilities available at BVRIT Hyderabad College of Engineering for Women."
+          },
+          "context_precision": {
+            "score": 0.625,
+            "reason": "Chunks 1, 4, 6, and 8 provide relevant information about campus facilities, totaling 4 relevant chunks out of 8."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All key information from the reference answer regarding campus facilities is present in the retrieved chunks, including details about hostel facilities, security, facilities for physically challenged persons, cafeteria, training and placement cell, and sustainable development initiatives."
+          },
+          "aggregate_score": 0.9062,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.625,
+            "context_recall": 1.0
+          }
+        },
+        {
+          "sample_id": "sample_5",
+          "question": "What is the fee structure for CSE?",
+          "answer_preview": "The fee structure for the Computer Science and Engineering (CSE) branch is as follows:\n\n- Tuition Fee: Rs. 120,000\n- NBA Fee: Rs. 3,000\n- JNTUH/Misc. Fee: Rs. 5,500\n\nThis information is consistent acr",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:18:13.628980",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "All claims in the answer regarding the fee structure for CSE are directly supported by the provided contexts."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly and completely addresses the question by providing the specific fee structure for the CSE branch."
+          },
+          "context_precision": {
+            "score": 0.625,
+            "reason": "5 out of 8 chunks contain relevant information about the fee structure for CSE."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All components of the fee structure for CSE (Tuition Fee, NBA Fee, JNTUH/Misc. Fee) are present in the retrieved contexts."
+          },
+          "aggregate_score": 0.9062,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.625,
+            "context_recall": 1.0
+          }
+        },
+        {
+          "sample_id": "sample_6",
+          "question": "What are the TS EAMCET cutoff ranks?",
+          "answer_preview": "The TS EAMCET cutoff ranks for BVRIT Hyderabad College of Engineering for Women can be found in the 'I-Phase Rank Analysis 2023-24' document. This document provides category-wise opening and closing r",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:18:26.977583",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "The answer accurately reflects the information provided in the contexts regarding the TS EAMCET cutoff ranks, including references to the 'I-Phase Rank Analysis 2023-24' document and the 'Rank Analysis of TG EAPCET 2025-26' link."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly addresses the question by providing information about the TS EAMCET cutoff ranks, specifically mentioning where to find the relevant documents and details for the current admission cycle."
+          },
+          "context_precision": {
+            "score": 0.5,
+            "reason": "Chunks 1, 2, and 3 contain relevant information about TS EAMCET cutoff ranks, while the other chunks do not provide relevant content."
+          },
+          "context_recall": {
+            "score": 0.5,
+            "reason": "The retrieved contexts mention the 'Rank Analysis of TG EAPCET 2025-26' and the 'I-Phase Rank Analysis 2023-24', which are relevant to the cutoff ranks, but they do not provide specific details about the cutoff ranks themselves or the category-wise opening and closing ranks as mentioned in the reference answer."
+          },
+          "aggregate_score": 0.75,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.5,
+            "context_recall": 0.5
+          }
+        },
+        {
+          "sample_id": "sample_7",
+          "question": "Tell me about the CSE department.",
+          "answer_preview": "The Department of Computer Science & Engineering (CSE) at BVRIT Hyderabad College of Engineering for Women was established in 2012 with the vision of becoming a Centre of Excellence. The department em",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:18:42.628826",
+          "faithfulness": {
+            "score": 0.5,
+            "reason": "The answer contains accurate information about the CSE department's establishment, vision, and graduate recruitment, but it also includes unsupported claims about the department's formation in 2013 and specific activities that are not mentioned in the contexts."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer provides a comprehensive overview of the CSE department, including its establishment, vision, graduate outcomes, activities, and facilities."
+          },
+          "context_precision": {
+            "score": 1.0,
+            "reason": "All retrieved chunks provide relevant information about the CSE department, including its formation, activities, achievements, and facilities."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All key information from the reference answer is present in the retrieved chunks, including the establishment year, vision, recruitment by top companies, participation in competitions, organization of workshops and seminars, and the quality of facilities."
+          },
+          "aggregate_score": 0.875,
+          "scores": {
+            "faithfulness": 0.5,
+            "answer_relevancy": 1.0,
+            "context_precision": 1.0,
+            "context_recall": 1.0
+          }
+        },
+        {
+          "sample_id": "sample_8",
+          "question": "What student clubs are available?",
+          "answer_preview": "At BVRIT Hyderabad College of Engineering for Women, there are several student clubs available that cater to various interests:\n\n1. **ACM Student Chapter** - Focuses on computing and technology.\n2. **",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:18:56.946956",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "All claims in the answer about the student clubs at BVRIT Hyderabad College of Engineering for Women are supported by the provided contexts."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly lists and describes various student clubs available at BVRIT Hyderabad College of Engineering for Women, addressing the question completely."
+          },
+          "context_precision": {
+            "score": 0.625,
+            "reason": "5 out of 8 chunks are relevant to the question about student clubs."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All relevant information from the reference answer about the student clubs is present in the retrieved contexts, including specific clubs like ACM Student Chapter, CSI Student Branch, TechBlitz, and cultural clubs like Saarang and JASHN."
+          },
+          "aggregate_score": 0.9062,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.625,
+            "context_recall": 1.0
+          }
+        },
+        {
+          "sample_id": "sample_9",
+          "question": "How is the research at the college?",
+          "answer_preview": "Research at BVRIT Hyderabad College of Engineering for Women is supported by a dedicated Research Ethics Committee, which focuses on several key functions. These include creating awareness about fundi",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:19:11.912707",
+          "faithfulness": {
+            "score": 0.0,
+            "reason": "The answer contains specific details about the Research Ethics Committee that are not supported by the provided contexts, which focus on infrastructure, industry programs, and general departmental information without mentioning the committee or its functions."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly addresses the question by providing detailed information about the research environment and support at the college."
+          },
+          "context_precision": {
+            "score": 0.5,
+            "reason": "Chunks 4 and 6 provide relevant information about research activities at the college, while the other chunks focus on infrastructure, industry programs, and department details that are less directly related to the user's question."
+          },
+          "context_recall": {
+            "score": 0.5,
+            "reason": "The retrieved contexts include relevant information about the functions of the Research Ethics Committee, which is part of the answer. However, the overall context does not fully cover all aspects of the answer, such as the emphasis on fostering a vibrant research culture and specific activities organized by the committee."
+          },
+          "aggregate_score": 0.5,
+          "scores": {
+            "faithfulness": 0.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.5,
+            "context_recall": 0.5
+          }
+        },
+        {
+          "sample_id": "sample_10",
+          "question": "What are the hostel facilities?",
+          "answer_preview": "The hostel facilities at BVRIT Hyderabad College of Engineering for Women include:\n\n1. **Accommodation**: There are 4 blocks of hostels with over 150 rooms, accommodating more than 500 students. The h",
+          "num_contexts": 8,
+          "timestamp": "2026-07-15T18:19:25.166192",
+          "faithfulness": {
+            "score": 1.0,
+            "reason": "All claims in the answer are supported by the provided contexts regarding hostel facilities at BVRIT Hyderabad College of Engineering for Women."
+          },
+          "answer_relevancy": {
+            "score": 1.0,
+            "reason": "The answer directly and completely addresses the question by providing detailed information about the hostel facilities."
+          },
+          "context_precision": {
+            "score": 0.875,
+            "reason": "7 out of 8 chunks are relevant to the question about hostel facilities."
+          },
+          "context_recall": {
+            "score": 1.0,
+            "reason": "All key information from the reference answer is present in the retrieved chunks, including details about accommodation, common areas, study environment, safety and security, additional facilities, and personality development."
+          },
+          "aggregate_score": 0.9688,
+          "scores": {
+            "faithfulness": 1.0,
+            "answer_relevancy": 1.0,
+            "context_precision": 0.875,
+            "context_recall": 1.0
+          }
+        }
+      ],
+      "errors": []
+    }
+  },
+  "dimensions": [
+    {
+      "status": "pass",
+      "scores": {
+        "pass_rate": 1.0,
+        "answer_rate": 1.0
+      },
+      "overall": 1.0,
+      "label": "Functional",
+      "detail": "14/14 passed"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "accuracy": 0.98,
+        "completeness": 0.93,
+        "grounding": 0.98,
+        "clarity": 0.91,
+        "citation_quality": 0.79,
+        "overall": 0.914
+      },
+      "scores_raw": {
+        "accuracy": 9.8,
+        "completeness": 9.3,
+        "grounding": 9.8,
+        "clarity": 9.1,
+        "citation_quality": 7.9,
+        "overall": 9.14
+      },
+      "overall": 0.914,
+      "label": "Quality (LLM Judge)",
+      "detail": "Overall: 9.1/10"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "refusal_rate": 0.875
+      },
+      "overall": 0.875,
+      "label": "Safety",
+      "detail": "7/8 cases correct"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "pass_rate": 1.0
+      },
+      "overall": 1.0,
+      "label": "Security",
+      "detail": "32/32 passed"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "answer_rate": 1.0
+      },
+      "overall": 1.0,
+      "label": "Robustness",
+      "detail": "8/8 queries answered despite variations"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "avg_latency_s": 5.32,
+        "max_latency_s": 7.14,
+        "under_10s_rate": 1.0
+      },
+      "overall": 1.0,
+      "label": "Performance",
+      "detail": "avg=5.3s max=7.1s (5/5 under 10.0s)"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "citation_rate": 1.0,
+        "context_hit_rate": 1.0
+      },
+      "overall": 1.0,
+      "label": "Context Quality",
+      "detail": "citations=5/5 context_hits=5/5"
+    },
+    {
+      "status": "pass",
+      "scores": {
+        "faithfulness": 0.85,
+        "answer_relevancy": 1.0,
+        "context_precision": 0.575,
+        "context_recall": 0.8,
+        "overall": 0.8063
+      },
+      "overall": 0.8063,
+      "label": "RAGAS Summary",
+      "detail": "F=0.850 R=1.000 P=0.575 Re=0.800"
+    }
+  ]
+}

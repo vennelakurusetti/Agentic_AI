@@ -130,7 +130,37 @@ def run_cleanup(days: int = 30) -> int:
 
 def get_stats(user_id: Optional[str] = None) -> Dict[str, Any]:
     """Return memory statistics for display in the UI."""
-    return {
-        "total_memories": get_memory_count(user_id),
+    total = get_memory_count(user_id)
+    stats: Dict[str, Any] = {
+        "total_memories": total,
         "user_id": user_id or "all",
+        "by_type": {},
+        "oldest_memory": "N/A",
+        "newest_memory": "N/A",
     }
+
+    try:
+        from memory.memory_store import get_memory_collection
+        collection = get_memory_collection()
+        if user_id:
+            results = collection.get(where={"user_id": user_id})
+        else:
+            results = collection.get()
+
+        metadatas = results.get("metadatas") or []
+        if metadatas:
+            # Count by type
+            for meta in metadatas:
+                mtype = (meta or {}).get("memory_type", "unknown")
+                stats["by_type"][mtype] = stats["by_type"].get(mtype, 0) + 1
+
+            # Oldest and newest
+            timestamps = [m.get("ts_iso", "") for m in metadatas if m and m.get("ts_iso")]
+            if timestamps:
+                timestamps_sorted = sorted(timestamps)
+                stats["oldest_memory"] = timestamps_sorted[0]
+                stats["newest_memory"] = timestamps_sorted[-1]
+    except Exception as e:
+        logger.debug(f"get_stats detail query failed: {e}")
+
+    return stats

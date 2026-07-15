@@ -7,7 +7,7 @@ import json
 import os
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional, Callable
+from typing import Any, Dict, List, Optional, Callable
 from functools import wraps
 
 import config
@@ -85,7 +85,7 @@ def wrap_llm_call(llm_func: Callable, prompt_version: str = "") -> Callable:
     return wrapper
 
 
-def read_logs(limit: int = 1000) -> list[Dict[str, Any]]:
+def read_logs(limit: int = 1000) -> List[Dict[str, Any]]:
     """Read recent LLM call logs from the JSONL file."""
     if not LOG_FILE.exists():
         return []

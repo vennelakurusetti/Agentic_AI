@@ -1,153 +1,387 @@
 """
-memory_extractor.py — Extract meaningful user facts from conversation turns.
+memory_extractor.py -- Extract meaningful user facts from conversation turns.
 
-Uses the LLM to detect statements like:
-  "My name is Priya" → {memory_type: "name", content: "Priya"}
-  "I am interested in CSE" → {memory_type: "interest", content: "CSE"}
-  "I like English" → {memory_type: "language_preference", content: "English"}
+Correctly classifies:
+  - "I like AIML" / "I am interested in AIML"  -> branch_interest
+  - "I like English" / "I speak Telugu"          -> language_preference
+  - "My name is Priya"                           -> name
+  - "Answer me in Telugu"                        -> response_style
 
-Only long-term useful facts are stored. Temporary chat messages are ignored.
+Classification rules (strictly enforced):
+  Branch keywords (CSE, ECE, EEE, IT, AIML, DS, etc.)  -> branch_interest
+  Language keywords (English, Telugu, Hindi, etc.)       -> language_preference
+  Otherwise                                              -> preference (generic)
 """
 
 import json
 import os
-from typing import Dict, Any, List, Optional
+import re
+from typing import Dict, Any, List
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
 
 import config
 from utils import logger
 
 load_dotenv()
 
-# System prompt for the extraction LLM
-EXTRACTION_SYSTEM_PROMPT = """You are a memory extraction assistant. Your job is to extract **long-term useful facts** about a user from their conversation.
+# ---------------------------------------------------------------------------
+# Known keyword sets
+# ---------------------------------------------------------------------------
 
-Look for statements like:
-- "My name is ..." → memory_type: "name", content: the name
-- "I am interested in ..." → memory_type: "interest", content: the interest
-- "I prefer ..." → memory_type: "preference", content: the preference
-- "I speak ..." / "I like ..." → memory_type: "language_preference", content: the language
-- "I don't like ..." → memory_type: "dislike", content: the disliked thing
-- "I am in first/second/third/fourth year" → memory_type: "year", content: the year
-- "My favorite branch is ..." → memory_type: "branch_interest", content: the branch
-- "I already know ..." → memory_type: "known_skill", content: the skill
-- "I am from ..." → memory_type: "location", content: the place
+# Canonical branch keywords — all lowercase
+BRANCH_KEYWORDS = {
+    "cse", "ece", "eee", "it", "aiml", "ai", "ml", "ds",
+    "computer science", "electronics", "electrical", "mechanical",
+    "civil", "data science", "artificial intelligence", "machine learning",
+    "information technology", "ai and ml", "ai&ml", "ai ml",
+    "computer science engineering", "electronics and communication",
+    "electrical and electronics",
+}
 
-Rules:
-1. Extract ONLY statements that are factual and would be useful in future conversations.
-2. Ignore greetings, thanks, goodbyes, and temporary chat messages.
-3. Set importance (0.0 to 1.0) based on how useful the fact is for personalisation.
-4. Return a JSON array of objects. Each object has: memory_type, content, importance.
-5. If nothing meaningful is found, return an empty array [].
-6. Do NOT include explanations or extra text — only valid JSON."""
+# Canonical language keywords — all lowercase
+LANGUAGE_KEYWORDS = {
+    "english", "telugu", "hindi", "tamil", "kannada", "malayalam",
+    "marathi", "bengali", "urdu", "odia",
+}
 
 
-def get_llm() -> ChatOpenAI:
-    """Get a non-streaming ChatOpenAI for extraction."""
-    api_key = os.getenv("OPENROUTER_API_KEY")
-    if not api_key:
-        raise ValueError("OPENROUTER_API_KEY not found in environment variables")
-    model = os.getenv("LLM_MODEL", config.LLM_MODEL)
-    return ChatOpenAI(
-        model=model,
-        temperature=0.0,
-        max_tokens=512,
-        openai_api_key=api_key,
-        openai_api_base=config.OPENROUTER_BASE_URL,
-        streaming=False,
-    )
+def _is_branch(text: str) -> bool:
+    """Return True if `text` refers to an engineering branch/department."""
+    t = text.lower().strip()
+    # Exact match
+    if t in BRANCH_KEYWORDS:
+        return True
+    # Substring match (handles "AIML department", "CSE branch", etc.)
+    for b in BRANCH_KEYWORDS:
+        if b in t:
+            return True
+    return False
 
 
-# ── Pattern-based extraction (fast path, no LLM call) ──────────
+def _is_language(text: str) -> bool:
+    """Return True if `text` refers to a spoken/written language."""
+    t = text.lower().strip()
+    if t in LANGUAGE_KEYWORDS:
+        return True
+    for lang in LANGUAGE_KEYWORDS:
+        if lang in t:
+            return True
+    return False
 
-SIMPLE_PATTERNS = [
-    # (memory_type, regex pattern, content_group_index, importance)
-    ("name", r"my name is (\w+(?:\s+\w+)?)", 1, 0.95),
-    ("interest", r"i am interested in (\w+(?:\s+\w+)?)", 1, 0.85),
-    ("preference", r"i prefer (\w+(?:\s+\w+)?)", 1, 0.80),
-    ("language_preference", r"i (?:speak|like) (\w+(?:\s+\w+)?)", 1, 0.75),
-    ("dislike", r"i don't like (\w+(?:\s+\w+)?)", 1, 0.70),
-    ("year", r"i am in (first|second|third|fourth|1st|2nd|3rd|4th)\s*(?:year)?", 1, 0.85),
-    ("branch_interest", r"my favorite branch is (\w+(?:\s+\w+)?)", 1, 0.85),
-    ("branch_interest", r"i (?:want|am going) to (?:join|take|study|pursue) (\w+(?:\s+\w+)?)", 1, 0.80),
-    ("known_skill", r"i (?:already )?know (\w+(?:\s+\w+)?)", 1, 0.80),
-    ("location", r"i am from (\w+(?:\s+\w+)?)", 1, 0.75),
-    ("goal", r"i want to become (?:a |an )?(\w+(?:\s+\w+)?)", 1, 0.80),
+
+def _normalize_branch(text: str) -> str:
+    """Return standardized branch name."""
+    t = text.strip()
+    upper = t.upper()
+    if upper in {"CSE", "ECE", "EEE", "IT", "AIML", "AI", "ML", "DS", "AI&ML"}:
+        return upper
+    # Strip trailing qualifiers ("branch", "department", etc.)
+    for suffix in [" branch", " department", " stream", " engineering", " course"]:
+        if t.lower().endswith(suffix):
+            t = t[: -len(suffix)].strip()
+    return t.title()
+
+
+# ---------------------------------------------------------------------------
+# Named pattern table
+# (memory_type, compiled_regex, capture_group, importance)
+# More specific patterns listed first so they match before the ambiguous ones.
+# ---------------------------------------------------------------------------
+
+_PATTERNS = [
+    # Name
+    ("name", re.compile(r"my name is ([A-Za-z]+(?:\s+[A-Za-z]+)?)", re.I), 1, 0.95),
+    ("name", re.compile(r"call me ([A-Za-z]+)", re.I), 1, 0.90),
+    ("name", re.compile(r"i am ([A-Za-z]+),? a student", re.I), 1, 0.85),
+
+    # Branch interest -- explicit qualifiers (run before the ambiguous patterns)
+    (
+        "branch_interest",
+        re.compile(
+            r"(?:my (?:favourite|favorite|preferred) branch is"
+            r"|i (?:want to|plan to|wish to|would like to) (?:join|study|take|pursue))"
+            r" ([A-Za-z0-9&\s]+)",
+            re.I,
+        ),
+        1, 0.92,
+    ),
+    (
+        "branch_interest",
+        re.compile(
+            r"i (?:am )?interested in ([A-Za-z0-9&\s]+?)"
+            r" (?:branch|department|stream|engineering|course)",
+            re.I,
+        ),
+        1, 0.90,
+    ),
+
+    # Year / semester
+    ("year", re.compile(r"i am (?:in |a )?(\w+)[\s-]?year", re.I), 1, 0.85),
+    ("year", re.compile(r"i am (?:a )?(\w+)[\s-]?year student", re.I), 1, 0.85),
+
+    # Goal
+    ("goal", re.compile(r"i want to become (?:a |an )?([A-Za-z\s]+)", re.I), 1, 0.80),
+    (
+        "goal",
+        re.compile(r"my (?:goal|aim|dream) is (?:to become )?(?:a |an )?([A-Za-z\s]+)", re.I),
+        1, 0.80,
+    ),
+
+    # Location
+    ("location", re.compile(r"i am from ([A-Za-z\s]+)", re.I), 1, 0.75),
+    ("location", re.compile(r"i (?:live|stay|reside) in ([A-Za-z\s]+)", re.I), 1, 0.72),
+
+    # Known skill
+    ("known_skill", re.compile(r"i (?:already )?know ([A-Za-z0-9\+\#\s]+)", re.I), 1, 0.78),
+    (
+        "known_skill",
+        re.compile(r"i (?:have|had) (?:experience|expertise) (?:in|with) ([A-Za-z0-9\s]+)", re.I),
+        1, 0.78,
+    ),
 ]
 
+# ---------------------------------------------------------------------------
+# Ambiguous "I like / I prefer / I am interested in" patterns
+# These require disambiguation: branch vs language vs generic preference.
+# ---------------------------------------------------------------------------
+
+_AMBIGUOUS_PATTERNS = [
+    re.compile(r"i (?:like|love|enjoy|prefer) ([A-Za-z0-9&\s]+)", re.I),
+    re.compile(r"i am interested in ([A-Za-z0-9&\s]+)", re.I),
+    re.compile(
+        r"my (?:favourite|favorite|preferred) (?:language|subject|topic|field|area|stream) is"
+        r" ([A-Za-z0-9&\s]+)",
+        re.I,
+    ),
+    re.compile(r"i (?:chose|choose|selected|opted for|opting for) ([A-Za-z0-9&\s]+)", re.I),
+]
+
+# Explicit language patterns: "I speak / communicate in ..."
+_LANG_EXPLICIT = re.compile(
+    r"i (?:speak|communicate in|prefer to (?:speak|talk|write) in) ([A-Za-z]+)", re.I
+)
+
+# Response style: "Answer me in Telugu"
+_RESPONSE_STYLE = re.compile(
+    r"(?:please |kindly )?(?:answer|respond|reply|explain|write)"
+    r" (?:me )?(?:in|using) ([A-Za-z]+)(?: language)?",
+    re.I,
+)
+
+# Trailing filler words to strip from captured groups
+_FILLER = re.compile(
+    r"\s*(very much|a lot|really|quite|so much|too|as well|also|further|more|most)$", re.I
+)
+
+# Words that are clearly NOT a branch or language preference (prevent false captures)
+_IGNORE_WORDS = {
+    "college", "bvrit", "campus", "placement", "job", "company",
+    "course", "fee", "seat", "hostel", "library", "food",
+}
+
+
+def _classify_like_statement(captured: str) -> Dict[str, Any]:
+    """
+    Disambiguate an "I like/prefer/am-interested-in X" statement.
+
+    Returns a memory dict:
+      - Branch keyword  -> {"memory_type": "branch_interest",    ...}
+      - Language keyword -> {"memory_type": "language_preference", ...}
+      - Otherwise        -> {"memory_type": "preference",          ...}
+
+    Examples:
+      "I like AIML"              -> branch_interest: AIML
+      "I am interested in CSE"   -> branch_interest: CSE
+      "I like English"           -> language_preference: English
+      "I prefer Telugu"          -> language_preference: Telugu
+    """
+    text = captured.strip()
+    text_lower = text.lower()
+
+    # Skip clearly irrelevant captures
+    if text_lower in _IGNORE_WORDS or len(text_lower) < 2:
+        return {}
+
+    if _is_branch(text_lower):
+        return {
+            "memory_type": "branch_interest",
+            "content": _normalize_branch(text),
+            "importance": 0.90,
+        }
+    if _is_language(text_lower):
+        return {
+            "memory_type": "language_preference",
+            "content": text.title(),
+            "importance": 0.82,
+        }
+    # Generic preference — store only if the text seems meaningful (> 3 chars, not a stop-word)
+    if len(text_lower) > 3:
+        return {
+            "memory_type": "preference",
+            "content": text.title(),
+            "importance": 0.70,
+        }
+    return {}
+
+
+# ---------------------------------------------------------------------------
+# Public: pattern-based extraction (fast, no LLM cost)
+# ---------------------------------------------------------------------------
 
 def extract_pattern_based(user_input: str) -> List[Dict[str, Any]]:
     """
-    Fast pattern-based extraction for common memory patterns.
-    Returns a list of {memory_type, content, importance} dicts.
+    Fast, rule-based memory extraction. No LLM cost.
+    Returns list of {memory_type, content, importance}.
+
+    Guarantees:
+    - "I like AIML"                     -> branch_interest: AIML
+    - "I am interested in CSE"          -> branch_interest: CSE
+    - "I am interested in CSE branch"   -> branch_interest: CSE
+    - "I like English"                  -> language_preference: English
+    - "I speak Telugu"                  -> language_preference: Telugu
+    - "Answer me in Hindi"              -> response_style: Respond in Hindi
+    - "My name is Priya"                -> name: Priya
     """
-    results = []
-    lower = user_input.lower()
-    for memory_type, pattern, group_idx, importance in SIMPLE_PATTERNS:
-        import re
-        match = re.search(pattern, lower)
-        if match:
-            content = match.group(group_idx).strip().title()
-            results.append({
-                "memory_type": memory_type,
-                "content": content,
-                "importance": importance,
-            })
+    results: List[Dict[str, Any]] = []
+    seen_types: set = set()
+
+    def _add(mem_type: str, content: str, importance: float) -> None:
+        content = content.strip()
+        if not content or len(content) < 2:
+            return
+        if mem_type not in seen_types:
+            results.append({"memory_type": mem_type, "content": content, "importance": importance})
+            seen_types.add(mem_type)
+
+    # --- Pass 1: Named patterns (specific — run first) ---
+    for mem_type, pattern, grp, importance in _PATTERNS:
+        m = pattern.search(user_input)
+        if m:
+            captured = _FILLER.sub("", m.group(grp).strip())
+            if not captured or len(captured) < 2:
+                continue
+            if mem_type == "branch_interest":
+                # Accept only if the captured text is actually a branch keyword
+                if _is_branch(captured.lower()):
+                    _add(mem_type, _normalize_branch(captured), importance)
+                # else: captured text is not a branch — skip, don't pollute
+                continue
+            _add(mem_type, captured.strip().title(), importance)
+
+    # --- Pass 2: Explicit language ("I speak Telugu") ---
+    m = _LANG_EXPLICIT.search(user_input)
+    if m:
+        lang = m.group(1).strip().title()
+        if _is_language(lang.lower()):
+            _add("language_preference", lang, 0.85)
+
+    # --- Pass 3: Response style ("Answer me in Telugu") ---
+    m = _RESPONSE_STYLE.search(user_input)
+    if m:
+        lang = m.group(1).strip().title()
+        if _is_language(lang.lower()):
+            _add("response_style", f"Respond in {lang}", 0.78)
+
+    # --- Pass 4: Ambiguous "I like / I prefer / I am interested in" ---
+    for pattern in _AMBIGUOUS_PATTERNS:
+        m = pattern.search(user_input)
+        if m:
+            captured = _FILLER.sub("", m.group(1).strip())
+            if len(captured) < 2:
+                continue
+            mem = _classify_like_statement(captured)
+            if mem and mem.get("memory_type"):
+                _add(mem["memory_type"], mem["content"], mem["importance"])
+
     return results
 
 
+# ---------------------------------------------------------------------------
+# Optional: LLM-based extraction (richer, costs one API call)
+# ---------------------------------------------------------------------------
+
+EXTRACTION_SYSTEM_PROMPT = """You are a memory extraction assistant for a college FAQ chatbot.
+Extract ONLY long-term, reusable facts about the user from their message.
+
+Classification rules (IMPORTANT):
+- "I like/prefer/am interested in CSE/ECE/AIML/IT/etc." -> memory_type: "branch_interest"
+- "I like/speak/prefer English/Telugu/Hindi/etc."        -> memory_type: "language_preference"
+- "My name is X"                                          -> memory_type: "name"
+- "I am in first/second year"                            -> memory_type: "year"
+- "I want to become a X"                                 -> memory_type: "goal"
+- "I am from X"                                          -> memory_type: "location"
+- "I already know Python/Java/etc."                      -> memory_type: "known_skill"
+- "Answer me in X language"                              -> memory_type: "response_style"
+
+Known engineering branches: CSE, ECE, EEE, IT, AIML, DS, Mechanical, Civil, Data Science, AI&ML.
+Known languages: English, Telugu, Hindi, Tamil, Kannada, Malayalam, etc.
+
+Rules:
+1. Extract ONLY factual, persistent user attributes -- NOT questions or opinions about the college.
+2. Do NOT extract "I like the placements" or "I like the college" -- those are opinions, not user attributes.
+3. Return a JSON array of {memory_type, content, importance (0.0-1.0)}.
+4. Return [] if nothing useful is found.
+5. Return ONLY valid JSON, no extra text."""
+
+
 def extract_llm_based(user_input: str, assistant_response: str) -> List[Dict[str, Any]]:
-    """
-    LLM-based extraction for more complex or implicit facts.
-    The assistant response is included for context.
-    """
-    llm = get_llm()
-    user_content = f"User: {user_input}\nAssistant: {assistant_response}"
-    messages = [
-        {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
-        {"role": "user", "content": user_content},
-    ]
+    """LLM-based extraction. Falls back gracefully if API fails."""
     try:
+        from langchain_openai import ChatOpenAI
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            return []
+        llm = ChatOpenAI(
+            model=config.LLM_MODEL,
+            temperature=0.0,
+            max_tokens=512,
+            openai_api_key=api_key,
+            openai_api_base=config.OPENROUTER_BASE_URL,
+            streaming=False,
+        )
+        messages = [
+            {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
+            {"role": "user", "content": f"User said: {user_input}"},
+        ]
         response = llm.invoke(messages)
         raw = response.content.strip()
-        # Remove markdown fences if present
         if raw.startswith("```"):
             raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
         extracted = json.loads(raw)
         if isinstance(extracted, list):
             return extracted
         return []
-    except (json.JSONDecodeError, Exception) as e:
-        logger.warning(f"LLM extraction failed: {e}")
+    except Exception as e:
+        logger.debug(f"LLM extraction skipped: {e}")
         return []
 
+
+# ---------------------------------------------------------------------------
+# Public entry point
+# ---------------------------------------------------------------------------
 
 def extract_memories(
     user_input: str,
     assistant_response: str,
-    use_llm: bool = True,
+    use_llm: bool = False,
 ) -> List[Dict[str, Any]]:
     """
     Extract memories from a conversation turn.
-
-    1. Try pattern-based extraction first (fast, no API cost).
-    2. If use_llm is True, also run LLM-based extraction.
-    3. Merge results, deduplicate by memory_type.
+    Pattern extraction always runs. LLM extraction is optional.
     """
     memories = extract_pattern_based(user_input)
 
     if use_llm:
-        llm_memories = extract_llm_based(user_input, assistant_response)
-        # Merge: LLM results override or supplement pattern results
+        llm_mems = extract_llm_based(user_input, assistant_response)
         existing_types = {m["memory_type"] for m in memories}
-        for mem in llm_memories:
-            if mem["memory_type"] not in existing_types:
+        for mem in llm_mems:
+            if mem.get("memory_type") and mem["memory_type"] not in existing_types:
                 memories.append(mem)
                 existing_types.add(mem["memory_type"])
 
-    logger.info(f"Extracted {len(memories)} memories from turn")
-    for m in memories:
-        logger.info(f"  → [{m['memory_type']}] {m['content']} (importance={m['importance']})")
+    if memories:
+        logger.info(f"Extracted {len(memories)} memories:")
+        for m in memories:
+            logger.info(f"  [{m['memory_type']}] {m['content']} (imp={m['importance']})")
     return memories

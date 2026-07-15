@@ -1,0 +1,779 @@
+{
+  "evaluation_type": "Functional Tests",
+  "timestamp": "2026-07-15T18:20:49.836056",
+  "total": 14,
+  "passed": 14,
+  "failed": 0,
+  "pass_rate": 1.0,
+  "answer_rate": 1.0,
+  "kb_gap_tests_skipped": 6,
+  "avg_latency_s": 3.855,
+  "errors": [],
+  "results": [
+    {
+      "id": "FT-01",
+      "question": "What is the admission process for B.Tech at BVRIT Hyderabad?",
+      "tags": [
+        "admissions"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.12,
+      "answer_preview": "The admission process for B.Tech at BVRIT Hyderabad College of Engineering for Women involves filling Category – A Seats, which will be filled by the Convener, TSEAMCET Admissions. For more detailed information, you can refer to the official website [Section: 6. Admissions - Admission Process].",
+      "citations": [
+        "6. Admissions - Admission Process",
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "admission",
+        "eamcet"
+      ],
+      "keywords_missed": [
+        "eapcet",
+        "counseling",
+        "apply"
+      ]
+    },
+    {
+      "id": "FT-02",
+      "question": "What are the eligibility criteria for B.Tech admission?",
+      "tags": [
+        "admissions",
+        "eligibility"
+      ],
+      "is_kb_gap": true,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 2.915,
+      "answer_preview": "This information is not available in the uploaded knowledge base.",
+      "citations": [
+        "6. Admissions - Admission Process",
+        "14. Addendum — Gap-Fill Content Merged from Live Website - M.Tech in Data Sciences",
+        "14. Addendum — Gap-Fill Content Merged from Live Website - M.Tech in Computer Science and Engineering",
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission",
+        "TS EAMCET SELECTION CRITERIA - B-Category Admission",
+        "INFORMATION TECHNOLOGY"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [],
+      "keywords_missed": [
+        "eligible",
+        "eligibility",
+        "12th",
+        "intermediate",
+        "mathematics",
+        "physics",
+        "10+2",
+        "pcm",
+        "50%",
+        "45%",
+        "eamcet",
+        "admission"
+      ]
+    },
+    {
+      "id": "FT-03",
+      "question": "What are the TS EAMCET cutoff ranks for CSE at BVRIT Hyderabad?",
+      "tags": [
+        "admissions",
+        "cutoff"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.645,
+      "answer_preview": "The TS EAMCET cutoff ranks for the Computer Science and Engineering (CSE) branch at BVRIT Hyderabad for the 2023-24 admission cycle are as follows:\n\n- **CSE (AI & ML)**: The opening and closing ranks can be found in the rank analysis document for the latest admission cycle. For the most current year",
+      "citations": [
+        "6. Admissions - Admission Process",
+        "14. Addendum — Gap-Fill Content Merged from Live Website - CSE (AI&ML) -- After Phase I (2023-24)",
+        "4. Accreditations & Rankings - NIRF"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "eamcet",
+        "rank",
+        "cutoff",
+        "cut-off",
+        "cse",
+        "computer science",
+        "closing rank"
+      ],
+      "keywords_missed": []
+    },
+    {
+      "id": "FT-04",
+      "question": "What departments are available at BVRIT Hyderabad?",
+      "tags": [
+        "departments"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.668,
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers several departments, including:\n\n1. Computer Science and Engineering\n2. Information Technology\n3. Electronics and Communication Engineering\n4. Electrical and Electronics Engineering\n5. Civil Engineering\n6. Mechanical Engineering\n7. Artificial I",
+      "citations": [
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "computer science",
+        "electronics",
+        "electrical",
+        "information technology",
+        "artificial intelligence",
+        "data science",
+        "mechanical",
+        "civil"
+      ],
+      "keywords_missed": []
+    },
+    {
+      "id": "FT-05",
+      "question": "Tell me about the CSE department at BVRIT Hyderabad.",
+      "tags": [
+        "departments",
+        "cse"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.131,
+      "answer_preview": "The Computer Science and Engineering (CSE) department at BVRIT Hyderabad College of Engineering for Women focuses on providing a strong foundation in computer science principles and practices. The department emphasizes both theoretical knowledge and practical skills, preparing students for various r",
+      "citations": [
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "computer science",
+        "cse",
+        "software",
+        "engineering"
+      ],
+      "keywords_missed": [
+        "programming"
+      ]
+    },
+    {
+      "id": "FT-06",
+      "question": "What is the Electronics and Communication Engineering department like?",
+      "tags": [
+        "departments",
+        "ece"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.909,
+      "answer_preview": "The Department of Electronics and Communication Engineering (ECE) at BVRIT Hyderabad College of Engineering for Women is supported by a dynamic team of eminent faculty members who specialize in various domains such as communications, signal processing, VLSI, and embedded systems. The department is c",
+      "citations": [
+        "ELECTRONICS AND COMMUNICATION ENGINEERING",
+        "ELECTRICAL AND ELECTRONICS ENGINEERING",
+        "14. Addendum — Gap-Fill Content Merged from Live Website - IETE Student Chapter",
+        "14. Addendum — Gap-Fill Content Merged from Live Website - M.Tech in VLSI Design"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "electronics",
+        "communication",
+        "ece",
+        "signal",
+        "vlsi",
+        "embedded"
+      ],
+      "keywords_missed": [
+        "circuit"
+      ]
+    },
+    {
+      "id": "FT-07",
+      "question": "Tell me about the placement record of BVRIT Hyderabad.",
+      "tags": [
+        "placements"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.235,
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women has a strong placement record, consistently topping the list of campus placement records among private institutions in Telangana and Andhra Pradesh over the last seven years. The central placement cell, which operates under Sri Vishnu Educational Soci",
+      "citations": [
+        "7. Placements - Placements – Placement Details",
+        "7. Placements - Placements – Training & Placement Cell",
+        "4. Accreditations & Rankings - NIRF"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "placement",
+        "campus"
+      ],
+      "keywords_missed": [
+        "recruit",
+        "company",
+        "companies",
+        "package",
+        "offer",
+        "lpa"
+      ]
+    },
+    {
+      "id": "FT-08",
+      "question": "Which companies visit BVRIT Hyderabad for campus placements?",
+      "tags": [
+        "placements",
+        "companies"
+      ],
+      "is_kb_gap": true,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 2.805,
+      "answer_preview": "This information is not available in the uploaded knowledge base.",
+      "citations": [
+        "7. Placements - Placements – Placement Details",
+        "7. Placements - Placements – Training & Placement Cell",
+        "7. Placements - Placements – Team",
+        "7. Placements - Placements – Training & Placement Process",
+        "TS EAMCET SELECTION CRITERIA - Transportation",
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [],
+      "keywords_missed": [
+        "placement",
+        "company",
+        "companies",
+        "recruit",
+        "campus",
+        "drive",
+        "tcs",
+        "infosys",
+        "wipro",
+        "microsoft",
+        "amazon",
+        "google",
+        "accenture",
+        "cognizant",
+        "capgemini"
+      ]
+    },
+    {
+      "id": "FT-09",
+      "question": "What campus facilities does BVRIT Hyderabad offer?",
+      "tags": [
+        "facilities"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 5.104,
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers a variety of campus facilities to support students' academic and extracurricular activities. These include:\n\n1. **Library**: A well-stocked library with a vast collection of books, journals, and digital resources.\n2. **Laboratories**: State-of-",
+      "citations": [
+        "TS EAMCET SELECTION CRITERIA - Transportation",
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "lab",
+        "library",
+        "hostel",
+        "cafeteria",
+        "sports",
+        "transport",
+        "facility",
+        "facilities"
+      ],
+      "keywords_missed": [
+        "laboratory",
+        "canteen",
+        "wifi"
+      ]
+    },
+    {
+      "id": "FT-10",
+      "question": "Is hostel accommodation available at BVRIT Hyderabad?",
+      "tags": [
+        "facilities",
+        "hostel"
+      ],
+      "is_kb_gap": true,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.159,
+      "answer_preview": "This information is not available in the uploaded knowledge base.",
+      "citations": [
+        "General",
+        "TS EAMCET SELECTION CRITERIA - Transportation",
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission",
+        "7. Placements - Placements – Placement Details"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [],
+      "keywords_missed": [
+        "hostel",
+        "accommodation",
+        "dormitory",
+        "boarding",
+        "stay",
+        "room"
+      ]
+    },
+    {
+      "id": "FT-11",
+      "question": "Tell me about the library at BVRIT Hyderabad.",
+      "tags": [
+        "facilities",
+        "library"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.223,
+      "answer_preview": "The library at BVRIT Hyderabad College of Engineering for Women is a four-storey building known as the Ruby Block. It serves as the intellectual hub of the college, providing an extensive range of resources for co-curricular activities and competitive examinations. The library is dedicated to foster",
+      "citations": [
+        "8. Campus Facilities - Library",
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "library",
+        "resource"
+      ],
+      "keywords_missed": [
+        "book",
+        "journal",
+        "reading",
+        "digital"
+      ]
+    },
+    {
+      "id": "FT-12",
+      "question": "What sports facilities are available at BVRIT?",
+      "tags": [
+        "facilities",
+        "sports"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.767,
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers a variety of sports facilities to promote physical fitness and well-being among students. The main features of the sports complex include:\n\n- 200 Meters Running Track\n- 2 Shuttle Badminton Courts\n- 1 Basketball Court\n- 1 Volleyball Court\n- 1 Th",
+      "citations": [
+        "FAITH OF NSS - Sports Club",
+        "IEEE-ASPP, J-GATE (JET) - PCS Facilities",
+        "TS EAMCET SELECTION CRITERIA - Transportation",
+        "IEEE-ASPP, J-GATE (JET) - Food and Cafetaria",
+        "IEEE-ASPP, J-GATE (JET) - Security",
+        "General",
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "sports",
+        "court",
+        "basketball",
+        "volleyball"
+      ],
+      "keywords_missed": [
+        "ground",
+        "cricket",
+        "gym",
+        "indoor",
+        "outdoor"
+      ]
+    },
+    {
+      "id": "FT-13",
+      "question": "What is the fee structure for B.Tech at BVRIT Hyderabad?",
+      "tags": [
+        "fees"
+      ],
+      "is_kb_gap": true,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.524,
+      "answer_preview": "This information is not available in the uploaded knowledge base. For detailed information regarding the fee structure for B.Tech at BVRIT Hyderabad, I recommend visiting the official website: [BVRIT Hyderabad](https://bvrithyderabad.edu.in).",
+      "citations": [
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [
+        "fee"
+      ],
+      "keywords_missed": [
+        "tuition",
+        "annual",
+        "rupee",
+        "rs.",
+        "lakh",
+        "payment",
+        "cost"
+      ]
+    },
+    {
+      "id": "FT-14",
+      "question": "How is research and innovation at BVRIT Hyderabad?",
+      "tags": [
+        "research"
+      ],
+      "is_kb_gap": true,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.448,
+      "answer_preview": "This information is not available in the uploaded knowledge base.",
+      "citations": [
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [
+        "lab"
+      ],
+      "keywords_missed": [
+        "research",
+        "publication",
+        "project",
+        "innovation",
+        "paper",
+        "patent",
+        "center",
+        "centre"
+      ]
+    },
+    {
+      "id": "FT-15",
+      "question": "What is the vision and mission of BVRIT Hyderabad?",
+      "tags": [
+        "about"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.921,
+      "answer_preview": "The vision and mission of BVRIT Hyderabad focus on creating a supportive educational environment that fosters academic excellence and holistic development. The college aims to:\n\n- Achieve academic excellence through innovative learning practices.\n- Enhance intellectual ability and technical competen",
+      "citations": [
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "vision",
+        "mission",
+        "excellence",
+        "education"
+      ],
+      "keywords_missed": [
+        "quality",
+        "engineering",
+        "empow",
+        "women"
+      ]
+    },
+    {
+      "id": "FT-16",
+      "question": "Is BVRIT Hyderabad NAAC accredited?",
+      "tags": [
+        "about",
+        "accreditation"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.389,
+      "answer_preview": "Yes, BVRIT Hyderabad College of Engineering for Women is accredited by NAAC with Grade ‘A’ as of the year 2020 [Section: 1. About BVRIT Hyderabad - About BVRIT Hyderabad].",
+      "citations": [
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission",
+        "4. Accreditations & Rankings - NIRF",
+        "General"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "naac",
+        "accredit",
+        "grade"
+      ],
+      "keywords_missed": [
+        "nba",
+        "autonomous",
+        "ugc"
+      ]
+    },
+    {
+      "id": "FT-17",
+      "question": "What student clubs and activities are there at BVRIT?",
+      "tags": [
+        "student_life"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 4.603,
+      "answer_preview": "At BVRIT Hyderabad College of Engineering for Women, there are various student clubs and activities that promote holistic development beyond just academic excellence. Students have the opportunity to participate in sports, social service, and cultural activities through different clubs, such as art ",
+      "citations": [
+        "FAITH OF NSS - Rotaract Club",
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission",
+        "TS EAMCET SELECTION CRITERIA - Transportation"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "club",
+        "activities",
+        "cultural",
+        "nss",
+        "student"
+      ],
+      "keywords_missed": [
+        "activity",
+        "society",
+        "technical",
+        "fest",
+        "ieee"
+      ]
+    },
+    {
+      "id": "FT-18",
+      "question": "How can I contact BVRIT Hyderabad?",
+      "tags": [
+        "contact"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "has_answer": true,
+        "min_length": true,
+        "content_match": true,
+        "citation_match": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.674,
+      "answer_preview": "You can contact BVRIT Hyderabad College of Engineering for Women through the official website. For specific contact details, please visit [BVRIT Hyderabad Official Website](https://bvrithyderabad.edu.in) [Section: General].",
+      "citations": [
+        "General",
+        "TS EAMCET SELECTION CRITERIA - Transportation"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": false,
+      "keywords_hit": [
+        "contact",
+        "bvrithyderabad",
+        "website",
+        "hyderabad"
+      ],
+      "keywords_missed": [
+        "email",
+        "phone",
+        "address",
+        "admissions@"
+      ]
+    },
+    {
+      "id": "FT-19",
+      "question": "Are there any scholarships available at BVRIT Hyderabad?",
+      "tags": [
+        "fees",
+        "scholarships"
+      ],
+      "is_kb_gap": true,
+      "is_nonsense": false,
+      "passed": true,
+      "checks": {
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true,
+        "refusal_on_nonsense": true
+      },
+      "latency": 3.598,
+      "answer_preview": "This information is not available in the uploaded knowledge base. For details on scholarships at BVRIT Hyderabad, I recommend checking the official website or contacting the college administration directly.",
+      "citations": [
+        "General",
+        "1. About BVRIT Hyderabad - About Society – SVES",
+        "1. About BVRIT Hyderabad - About BVRIT Hyderabad",
+        "2. Vision & Mission - Vision & Mission"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [
+        "scholarship"
+      ],
+      "keywords_missed": [
+        "financial",
+        "merit",
+        "fee waiver",
+        "concession",
+        "eamcet",
+        "government",
+        "aid",
+        "waiver"
+      ]
+    },
+    {
+      "id": "FT-20",
+      "question": "What is the recipe for chocolate cake?",
+      "tags": [
+        "refusal",
+        "out_of_scope"
+      ],
+      "is_kb_gap": false,
+      "is_nonsense": true,
+      "passed": true,
+      "checks": {
+        "refusal_on_nonsense": true,
+        "min_length": true,
+        "content_match": true,
+        "has_answer": true
+      },
+      "latency": 3.254,
+      "answer_preview": "This information is not available in the uploaded knowledge base.",
+      "citations": [
+        "SELF-STABILIZING SPOON FOR PARKINSON'S SUFFERERS",
+        "USHA MULLAPUDI ARCH",
+        "IEEE-ASPP, J-GATE (JET) - Food and Cafetaria",
+        "20. SYSTEM AND METHOD FOR EDITING MATHEMATICAL FORMULA AND METHOD THEREOF",
+        "19. A SYSTEM FOR CALCULATING BINOMIAL MATHEMATICAL EXPRESSION AND METHOD THEREOF",
+        "BRAIN-COMPUTER INTERFACE FOR MENTAL STATE ANALYSIS",
+        "3. Management & Leadership - Management",
+        "3. EFFICIENT ENHANCED VLSI ARCHITECTURE OF MONTGOMERY MODULAR MULTIPLICATION"
+      ],
+      "chunks_retrieved": 8,
+      "hard_refused": true,
+      "keywords_hit": [],
+      "keywords_missed": []
+    }
+  ]
+}

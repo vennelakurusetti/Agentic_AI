@@ -1,0 +1,259 @@
+{
+  "evaluation_type": "LLM-as-Judge",
+  "timestamp": "2026-07-15T18:22:32.340860",
+  "judge_model": "openai/gpt-4o-mini",
+  "num_questions": 10,
+  "num_judged": 10,
+  "num_rag_errors": 0,
+  "aggregate_scores": {
+    "accuracy": 9.8,
+    "completeness": 9.3,
+    "grounding": 9.8,
+    "clarity": 9.1,
+    "citation_quality": 7.9,
+    "overall": 9.14
+  },
+  "samples": [
+    {
+      "sample_id": "judge_1",
+      "question": "What is the admission process for B.Tech at BVRIT Hyderabad?",
+      "answer_preview": "The admission process for B.Tech at BVRIT Hyderabad College of Engineering for Women involves filling Category – A Seats, which will be managed by the Convener of TSEAMCET Admissions. The application procedure is designed to be straightforward and clear for prospective students [Section: 6. Admissio",
+      "num_citations": 2,
+      "timestamp": "2026-07-15T18:21:47.937139",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 8,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately describes the admission process as stated in the context.",
+        "completeness": "The answer provides a good overview but could include more details about the application process.",
+        "grounding": "All claims made in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is well-structured and easy to understand.",
+        "citation_quality": "The citation is relevant, but it could be more specific to enhance its usefulness."
+      },
+      "overall": 9.0,
+      "summary": "The answer is accurate and clear, but could benefit from additional details.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_2",
+      "question": "What departments are available?",
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers several departments, including:\n\n1. **Information Technology** - Focuses on comprehensive learning to benefit students in the IT industry and society [Section: INFORMATION TECHNOLOGY].\n2. **Computer Science and Engineering** - Provides opportun",
+      "num_citations": 5,
+      "timestamp": "2026-07-15T18:21:52.600254",
+      "scores": {
+        "accuracy": 8,
+        "completeness": 9,
+        "grounding": 8,
+        "clarity": 9,
+        "citation_quality": 7
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately lists departments, but the context does not explicitly mention Computer Science and Engineering or Electrical and Electronics Engineering.",
+        "completeness": "The answer provides a comprehensive list of departments and their focus areas, addressing the question well.",
+        "grounding": "Most claims are supported by the context, but some departments mentioned are not explicitly detailed in the retrieved context.",
+        "clarity": "The answer is well-structured and easy to read, with a clear format for listing departments.",
+        "citation_quality": "Citations are relevant but include sections that are not directly referenced in the context."
+      },
+      "overall": 7.8,
+      "summary": "The answer is mostly accurate and complete, but some departments listed lack direct support from the context.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_3",
+      "question": "Tell me about placements at BVRIT Hyderabad.",
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women has a robust placement system facilitated by its Training and Placement Cell (TAP Cell). This central placement cell supports students not only from BVRIT Hyderabad but also from other institutions under the Sri Vishnu Educational Society. Over the pa",
+      "num_citations": 5,
+      "timestamp": "2026-07-15T18:21:57.097535",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 9,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately reflects the placement system and achievements of BVRIT Hyderabad.",
+        "completeness": "The answer covers the placement system and skill development but could provide more specific statistics or details about the placement rates.",
+        "grounding": "All claims made in the answer are well-supported by the retrieved context.",
+        "clarity": "The answer is structured logically and is easy to read, though it could be slightly more concise.",
+        "citation_quality": "Citations are relevant, but some could be more directly tied to specific claims made in the answer."
+      },
+      "overall": 9.2,
+      "summary": "The answer provides a comprehensive and accurate overview of placements at BVRIT Hyderabad, with minor areas for improvement in completeness and citation relevance.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_4",
+      "question": "What are the campus facilities?",
+      "answer_preview": "BVRIT Hyderabad College of Engineering for Women offers a variety of campus facilities to support students' needs:\n\n1. **Hostel Facilities**: The college has 4 blocks of hostels with over 150 rooms, accommodating more than 500 students. Amenities include a common room, gym area, 24/7 water supply, g",
+      "num_citations": 7,
+      "timestamp": "2026-07-15T18:22:01.183841",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 10,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 9
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately reflects the facilities available at the college as described in the context.",
+        "completeness": "The answer thoroughly covers all major campus facilities, addressing the question fully.",
+        "grounding": "All claims made in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is well-structured and easy to read, though it could be slightly more concise.",
+        "citation_quality": "The citations are relevant and correspond to the sections of the context from which the information was derived."
+      },
+      "overall": 9.6,
+      "summary": "The answer provides a comprehensive and accurate overview of the campus facilities with minor improvements needed for clarity.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_5",
+      "question": "What is the fee structure for CSE?",
+      "answer_preview": "The fee structure for the Computer Science and Engineering (CSE) branch is as follows:\n\n- Tuition Fee: Rs. 120,000\n- NBA Fee: Rs. 3,000\n- JNTUH/Misc. Fee: Rs. 5,500\n\nThis information is consistent across multiple batches [Section: 14. Addendum — Gap-Fill Content Merged from Live Website - 2025 Batch",
+      "num_citations": 7,
+      "timestamp": "2026-07-15T18:22:05.327539",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 10,
+        "grounding": 10,
+        "clarity": 10,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer provides the correct fee structure for CSE as per the retrieved context.",
+        "completeness": "The answer fully addresses the question by listing all relevant fees.",
+        "grounding": "All claims made in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is well-structured and easy to read.",
+        "citation_quality": "The citations are relevant but could be more specific to the context provided."
+      },
+      "overall": 9.6,
+      "summary": "The answer is accurate, complete, and well-grounded, with minor improvements needed in citation specificity.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_6",
+      "question": "Tell me about the hostel facilities.",
+      "answer_preview": "The hostel facilities at BVRIT Hyderabad College of Engineering for Women are designed to provide a comfortable and secure living environment for students. Here are some key features:\n\n1. **Accommodation**: The college has 4 blocks of hostels with over 150 rooms, accommodating more than 500 students",
+      "num_citations": 2,
+      "timestamp": "2026-07-15T18:22:09.596608",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 9,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately reflects the hostel facilities as described in the context.",
+        "completeness": "The answer covers most aspects of the hostel facilities but could include more about the overall personality development and social life aspects.",
+        "grounding": "All claims made in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is well-structured and easy to read, with clear points.",
+        "citation_quality": "The citations are relevant but could be more specific to the information provided."
+      },
+      "overall": 9.2,
+      "summary": "The answer provides a comprehensive and accurate overview of the hostel facilities, with minor areas for improvement in completeness and citation specificity.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_7",
+      "question": "What research opportunities are available?",
+      "answer_preview": "At BVRIT Hyderabad College of Engineering for Women, there are several research opportunities available through the Research Ethics Committee. The committee focuses on creating awareness about funding opportunities from government, industry, and international agencies. It also motivates faculty for ",
+      "num_citations": 7,
+      "timestamp": "2026-07-15T18:22:13.372005",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 8,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 7
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately reflects the functions of the Research Ethics Committee as described in the context.",
+        "completeness": "While the answer covers the committee's functions well, it could include more about other research opportunities available, such as industry collaborations and internships.",
+        "grounding": "All claims made in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is well-structured and easy to read, presenting information in a logical manner.",
+        "citation_quality": "The citations are relevant but could be more specific to enhance their usefulness."
+      },
+      "overall": 8.8,
+      "summary": "The answer is accurate and well-grounded but could be more comprehensive regarding the full range of research opportunities.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_8",
+      "question": "What student clubs are there?",
+      "answer_preview": "At BVRIT Hyderabad College of Engineering for Women, there are several student clubs that cater to various interests. These include:\n\n1. **ACM Student Chapter** - A club focused on computing and technology.\n2. **CSI Student Branch** - A branch of the Computer Society of India, promoting computer sci",
+      "num_citations": 6,
+      "timestamp": "2026-07-15T18:22:17.907742",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 10,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately lists the student clubs mentioned in the context.",
+        "completeness": "The answer fully addresses the question by providing a comprehensive list of clubs.",
+        "grounding": "All claims in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is well-structured and easy to read, though minor improvements could enhance flow.",
+        "citation_quality": "The citations are relevant, but could be more specific to the clubs mentioned."
+      },
+      "overall": 9.4,
+      "summary": "The answer is highly accurate and complete, effectively addressing the question with clear structure.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_9",
+      "question": "How is the library at BVRIT Hyderabad?",
+      "answer_preview": "The library at BVRIT Hyderabad College of Engineering for Women is described as the intellectual hub of the institution. It is a four-storey building known as the Ruby Block and offers an extensive range of resources for co-curricular activities and competitive examinations. The library is dedicated",
+      "num_citations": 2,
+      "timestamp": "2026-07-15T18:22:22.220552",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 10,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately reflects the information provided in the context about the library.",
+        "completeness": "The answer fully addresses the question regarding the library's features and purpose.",
+        "grounding": "All claims made in the answer are directly supported by the retrieved context.",
+        "clarity": "The answer is mostly clear and well-structured, though slightly verbose.",
+        "citation_quality": "The citation is relevant, but could be more specific to enhance its usefulness."
+      },
+      "overall": 9.4,
+      "summary": "The answer is highly accurate and complete, with minor improvements needed in clarity and citation specificity.",
+      "judge_error": null
+    },
+    {
+      "sample_id": "judge_10",
+      "question": "What is the vision and mission of the college?",
+      "answer_preview": "The vision and mission of BVRIT Hyderabad College of Engineering for Women focus on providing quality education and empowering women through comprehensive training. The college aims to develop socially responsible engineers who are adept at the latest technologies and capable of adapting to new chal",
+      "num_citations": 6,
+      "timestamp": "2026-07-15T18:22:27.930160",
+      "scores": {
+        "accuracy": 10,
+        "completeness": 10,
+        "grounding": 10,
+        "clarity": 9,
+        "citation_quality": 8
+      },
+      "reasoning": {
+        "accuracy": "The answer accurately reflects the vision and mission as described in the context.",
+        "completeness": "The answer fully addresses the question regarding the vision and mission of the college.",
+        "grounding": "All claims made in the answer are supported by the retrieved context.",
+        "clarity": "The answer is mostly clear and well-structured, though slightly verbose.",
+        "citation_quality": "The citations are relevant, but could be more specific to the vision and mission section."
+      },
+      "overall": 9.4,
+      "summary": "The answer provides a comprehensive and accurate overview of the college's vision and mission with minor clarity and citation improvements needed.",
+      "judge_error": null
+    }
+  ],
+  "rag_errors": []
+}
