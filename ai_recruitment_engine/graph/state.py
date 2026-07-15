@@ -1,8 +1,21 @@
-from typing import TypedDict, List, Optional, Any
-from models.schemas import JobDescription, ResumeData, ScoreCard, InterviewSlot, FinalDecision, HiringRubric
+"""
+LangGraph state definition for the recruitment pipeline.
+"""
+
+from typing import Any, List, Optional, TypedDict
+
+from models.schemas import (
+    FinalDecision,
+    HiringRubric,
+    InterviewSlot,
+    JobDescription,
+    ResumeData,
+    ScoreCard,
+)
+
 
 class TrajectoryEntry(TypedDict):
-    """Structured trajectory entry with full step details."""
+    """One step in the execution trajectory."""
     thought: str
     tool_used: str
     arguments: dict
@@ -10,18 +23,34 @@ class TrajectoryEntry(TypedDict):
     state_changes: dict
     decision: str
 
-class RecruitmentState(TypedDict):
-    """State for the recruitment agent graph."""
-    jd_raw: str                      # Raw job description text
-    jd_parsed: Optional[JobDescription]  # Parsed JD
-    resume_raw: str                  # Raw resume text
-    resume_parsed: Optional[ResumeData]  # Parsed resume
-    score_card: Optional[ScoreCard]  # Candidate score
-    decision: Optional[FinalDecision]  # Final decision
-    interview_slot: Optional[InterviewSlot]  # Scheduled interview
-    available_slots: str             # Available interview slots
-    plan: List[str]                  # Execution plan
-    candidate_name: str              # Candidate name
-    trajectory: List[Any]            # Execution log (TrajectoryEntry dicts)
-    error: Optional[str]             # Error message if any
-    rubric: Optional[HiringRubric]   # Generated hiring rubric
+
+class RecruitmentState(TypedDict, total=False):
+    """Full state passed through every node in the recruitment graph."""
+
+    # ── Input ────────────────────────────────────────────────────────────
+    jd_raw: str                          # Raw job description text
+    resume_raw: str                      # Raw resume text
+
+    # ── Parsed data ──────────────────────────────────────────────────────
+    jd_parsed: Optional[JobDescription]  # Structured JD
+    resume_parsed: Optional[ResumeData]  # Structured resume
+    rubric: Optional[HiringRubric]       # Generated scoring rubric
+    plan: List[str]                      # Agent evaluation plan
+
+    # ── Per-candidate outputs ─────────────────────────────────────────────
+    candidate_name: str
+    score_card: Optional[ScoreCard]
+    decision: Optional[FinalDecision]
+
+    # ── Guardrail results ────────────────────────────────────────────────
+    guardrail_passed: bool               # True = safe, False = flagged
+    guardrail_reason: str                # Human-readable summary
+    guardrail_issues: List[str]          # Specific violation strings
+
+    # ── Interview ────────────────────────────────────────────────────────
+    available_slots: str                 # JSON string of available slots
+    interview_slot: Optional[InterviewSlot]
+
+    # ── Execution metadata ───────────────────────────────────────────────
+    trajectory: List[Any]                # List of TrajectoryEntry dicts
+    error: Optional[str]                 # Last error message
