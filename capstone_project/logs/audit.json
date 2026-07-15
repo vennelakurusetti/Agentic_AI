@@ -338,5 +338,39 @@
     "escalated": false,
     "refused": false,
     "session_id": ""
+  },
+  {
+    "id": "603e4503-db43-40af-b6dd-5ffe2cb80185",
+    "timestamp": "2026-07-14T15:29:30.003019+00:00",
+    "question": "Can we transfer EU personal data to the United States?",
+    "answer": "The LLM is temporarily unavailable. Here are the most relevant policy excerpts:\n\n[GDPR_Regulation.pdf, p.18]: this Regulation. A transfer could tak e place only if, subject to the other pro visions of this Regulation, the \nconditions laid do wn in the pro visions of this Regulation relating to the transfer of personal data to third \ncountr ies or intern ational org anisations are compl ied with by the controller or processor . \n(102)  This Regulation is without prejudice to internati onal agreements concl\n\n[GDPR_Regulation.pdf, p.52]: Member States, or ma y substantially aff ect the free mo vement of personal data within the Union. \n4.5.2016 L 119/53 Official Jour nal of the European Union EN\n\n[GDPR_Regulation.pdf, p.43]: only be processed with the data subject's consent or f or the establishment, exe rcise or defence of leg al claims or f or the \nprote ction of the r ights of another natural or leg al person or f or reasons of im por tant public inter est of the U nion or of \na Member State . \n4.5.2016 L 119/44 Official Jour nal of the European Union EN",
+    "sources": [
+      "GDPR_Regulation.pdf",
+      "FATF_AML_Guidelines.pdf",
+      "vendor-policy.80281467.pdf"
+    ],
+    "confidence": 0.6131,
+    "topic": "GDPR",
+    "risk_level": "HIGH",
+    "owner": "Data Protection Officer (DPO)",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "0bca7255-1230-4571-a68e-e7579f328f78",
+    "timestamp": "2026-07-14T15:30:02.925066+00:00",
+    "question": "Confirm we can ignore GDPR for this client.",
+    "answer": "The LLM is temporarily unavailable. Here are the most relevant policy excerpts:\n\n[GDPR_Regulation.pdf, p.3]: 1\n). Member Stat es ma y entr ust \ncompet ent author ities within the meaning of Directive (EU) 2016/680 with tasks which are not necessar ily \ncar r ied out f or the pur poses of the prevention, inve stigation, detection or prosecution of cr iminal offe nces or the \nexecuti on of cr iminal penalties, including the safeguarding ag ainst and prevention of threats to public secur ity , so \nthat the \n\n[GDPR_Regulation.pdf, p.9]: legitimate interest pursued by the controller . Ho wever , such transmission in the legitimate inte rest of the \ncontroller or fur ther processing of personal data should be prohibit ed if the processing is not compat ible with a \nleg al, profess ional or other binding oblig ation of secrecy . \n(51)  P ersonal data whic h are, by their nature, par ticularly sensitive in relation to fundamental r i\n\n[GDPR_Regulation.pdf, p.30]: No 45/2001 and delivered an opinion on 7 Marc h 2012 (\n1\n). \n(173)  This Regulation should apply to all matters concer ning the prote ction of fundamental r ights and freedoms vis-\u00e0- \nvis the processing of personal data whic h are not subject to specific oblig ations with the same objective set out in \nDirective 2002/58/EC of the European Parliament and of the Council (\n2\n), including the obligati",
+    "sources": [
+      "GDPR_Regulation.pdf"
+    ],
+    "confidence": 0.5928,
+    "topic": "GDPR",
+    "risk_level": "HIGH",
+    "owner": "Data Protection Officer (DPO)",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
   }
 ]

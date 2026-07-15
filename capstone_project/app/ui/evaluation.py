@@ -61,6 +61,16 @@ EVAL_CASES: List[EvalCase] = [
         description="No relevant policy document — must refuse gracefully.",
     ),
     EvalCase(
+        name="Out-of-Corpus — DPDP Act (India)",
+        question="What is India's Digital Personal Data Protection Act (DPDP Act)?",
+        expect_refusal=True,
+        expect_escalation=False,
+        description=(
+            "DPDP is not in the loaded corpus. Must refuse BEFORE calling the LLM "
+            "— keyword guard (Layer 1) must fire and no GDPR citations may appear."
+        ),
+    ),
+    EvalCase(
         name="High-Stakes Escalation — Cross-Border Transfer",
         question="Can we store EU customer data on US servers?",
         expected_topic=ComplianceTopic.GDPR,
@@ -178,7 +188,8 @@ def render_evaluation_page(vectorstore: Any) -> None:
 
     st.info(
         f"**{len(EVAL_CASES)} test cases** covering: "
-        "Corpus coverage · Refusal gate · Escalation · Routing · Pressure testing"
+        "Corpus coverage · Refusal gate · DPDP/unsupported-standard refusal · "
+        "Escalation · Routing · Pressure testing"
     )
 
     if vectorstore is None:

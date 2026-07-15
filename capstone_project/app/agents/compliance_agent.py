@@ -42,12 +42,15 @@ from app.governance.escalation import should_escalate
 from app.governance.refusal import (
     should_refuse,
     filter_relevant_chunks,
+    is_unsupported_standard,
     OOC_REFUSAL_MESSAGE,
     OOC_THRESHOLD,
     REFUSAL_MESSAGE,
+    REFUSAL_TEXT,
     REASON_EMPTY,
     REASON_LOW_SCORE,
     REASON_OOC,
+    REASON_KEYWORD,
 )
 from app.rag.retriever import retrieve
 from app.utils.config import get_settings
@@ -200,8 +203,34 @@ Be firm, precise, and professional. Under 400 words.
 # ──────────────────────────────────────────────────────────────
 
 def _node_retrieve(state: AgentState) -> AgentState:
-    """Retrieve top-K relevant chunks from the vector store."""
+    """
+    Retrieve top-K relevant chunks from the vector store.
+
+    Layer 1 keyword guard runs FIRST — if the question mentions a known
+    unsupported standard (DPDP, HIPAA, ISO 9001, SOC 2, PCI DSS, CCPA, …)
+    the question is refused immediately without touching the retriever or
+    the LLM.  This prevents GDPR chunks from being returned for DPDP/HIPAA
+    questions due to shared vocabulary, which would cause the LLM to produce
+    a misleading "GDPR is different from DPDP" answer.
+    """
     question = state["question"]
+
+    # ── Layer 1: keyword guard ─────────────────────────────────
+    is_unsupported, standard_name = is_unsupported_standard(question)
+    if is_unsupported:
+        logger.warning(
+            f"[retrieve:keyword] Pre-retrieval refusal — "
+            f"question asks about unsupported standard: '{standard_name}'. "
+            f"Skipping retrieval and LLM call entirely."
+        )
+        state["chunks"] = []
+        state["retrieval_debug"] = None
+        state["refused"] = True
+        state["refusal_reason"] = REASON_KEYWORD
+        state["answer_text"] = REFUSAL_TEXT
+        return state
+
+    # ── Normal retrieval ───────────────────────────────────────
     vectorstore = state.get("vectorstore")
 
     if vectorstore is None:
@@ -227,29 +256,48 @@ def _node_route(state: AgentState) -> AgentState:
 
 def _node_govern(state: AgentState) -> AgentState:
     """
-    Governance node — runs four checks in order:
+    Governance node — runs checks in order:
 
-    1. Bypass-intent detection: if the question asks to ignore/bypass a
-       compliance control, force risk=HIGH and requires_human_review=True
-       regardless of confidence.
-    2. Chunk deduplication: remove duplicate content/page results.
-    3. Refusal gate: refuse if no chunks pass the minimum score threshold.
-    4. Confidence scoring: flag for human review if below threshold.
+    1. Early-exit: if Layer 1 (keyword guard) already refused the question
+       in _node_retrieve, apply canonical refusal metadata and return.
+    2. Bypass-intent detection: if the question asks to ignore/bypass a
+       compliance control, force risk=HIGH and requires_human_review=True.
+       IMPORTANT: bypass questions skip the OOC score gate entirely —
+       they must reach the LLM so it can cite the policy and explain why
+       the action is not permitted.
+    3. Chunk deduplication: remove duplicate content/page results.
+    4. Refusal gate (Layer 2): refuse if no chunks pass the OOC score
+       threshold.  Skipped for bypass questions (see step 2).
+    5. Confidence scoring: flag for human review if below threshold.
+
+    Refusal canonical metadata (applied for ALL refusal reasons):
+      topic    = GENERAL
+      owner    = COMPLIANCE_OFFICER
+      risk     = LOW
+      escalated = False
+      confidence = 0.0
     """
     chunks = state.get("chunks", [])
     question = state["question"]
     routing: RoutingDecision = state.get("routing", RoutingDecision())
 
+    # ── 0. Early-exit: keyword guard already refused ───────────
+    if state.get("refused") is True:
+        _apply_refusal_metadata(state)
+        return state
+
     # ── 1. Bypass-intent detection ─────────────────────────────
+    # Run BEFORE the refusal gate so bypass questions are never refused.
+    # "Confirm we can ignore GDPR for this client" must be answered by the
+    # LLM (with a firm refusal citing the policy), not by the OOC gate.
     bypass = is_bypass_question(question)
     state["bypass_intent"] = bypass
 
     if bypass:
         logger.warning(
-            f"[govern] ⚠️ Bypass intent detected in: '{question[:80]}' — "
-            "forcing HIGH risk + human review."
+            f"[govern] ⚠️ Bypass intent detected: '{question[:80]}' — "
+            "forcing HIGH risk + skipping score gate so LLM answers."
         )
-        # Override routing risk in-place (mutate a copy, not the original)
         state["routing"] = RoutingDecision(
             topic=routing.topic,
             risk_level=RiskLevel.HIGH,
@@ -261,59 +309,57 @@ def _node_govern(state: AgentState) -> AgentState:
     deduped = _dedup_chunks(chunks)
     state["chunks"] = deduped
 
-    # ── 3. Refusal gate ────────────────────────────────────────
-    refused, refusal_reason = should_refuse(deduped)
-    state["refused"] = refused
-    state["refusal_reason"] = refusal_reason
+    # ── 3. Refusal gate (Layer 2 — score) ─────────────────────
+    # Bypass questions skip this gate.  The retriever may return low-scoring
+    # GDPR chunks for "ignore GDPR" questions (vocab overlap, not exact match),
+    # but those chunks are still relevant enough for the LLM to cite the rule.
+    if bypass:
+        logger.info(
+            "[govern] Bypass question — skipping OOC score gate. "
+            "Sending retrieved chunks to LLM regardless of scores."
+        )
+        state["refused"] = False
+        state["refusal_reason"] = None
+        # Use all chunks as relevant (bypass system prompt will guide the LLM)
+        relevant = deduped
+        rejected = []
+    else:
+        refused, refusal_reason = should_refuse(deduped)
+        state["refused"] = refused
+        state["refusal_reason"] = refusal_reason
 
-    if refused:
-        # Build a more informative refusal message based on the specific reason
-        if refusal_reason == REASON_EMPTY:
-            state["answer_text"] = (
-                "I was unable to search the policy documents because the "
-                "knowledge base appears to be empty. Please click "
-                "**Rebuild Knowledge Base** in the sidebar."
-            )
-            logger.warning("[govern] REFUSE — empty retrieval (no chunks indexed).")
-        elif refusal_reason == REASON_OOC:
-            # Use the dedicated OOC refusal message (not the generic fallback)
-            state["answer_text"] = OOC_REFUSAL_MESSAGE
-            logger.warning(
-                "[govern] REFUSE (OOC) — top chunk score below OOC threshold. "
-                "Question is outside the loaded corpus."
-            )
-        elif refusal_reason == REASON_LOW_SCORE:
-            state["answer_text"] = REFUSAL_MESSAGE
-            logger.warning(
-                "[govern] REFUSE — all retrieved chunks scored below similarity "
-                "threshold. The question may genuinely be outside the corpus, "
-                "or the similarity threshold may need lowering."
-            )
-        else:
-            state["answer_text"] = REFUSAL_MESSAGE
-            logger.warning("[govern] REFUSE — unknown reason.")
+        if refused:
+            if refusal_reason == REASON_EMPTY:
+                state["answer_text"] = (
+                    "I was unable to search the policy documents because the "
+                    "knowledge base appears to be empty. Please click "
+                    "**Rebuild Knowledge Base** in the sidebar."
+                )
+                logger.warning("[govern] REFUSE — empty retrieval (no chunks indexed).")
+            else:
+                # REASON_OOC or REASON_LOW_SCORE
+                state["answer_text"] = REFUSAL_TEXT
+                logger.warning(
+                    f"[govern] REFUSE ({refusal_reason}) — "
+                    "top chunk score below OOC threshold."
+                )
 
-        state["confidence"] = 0.0
-        state["requires_human_review"] = True
-        # Even on refusal, populate relevant/rejected for debug
-        state["relevant_chunks"] = []
-        state["rejected_chunks"] = deduped
-        return state
+            _apply_refusal_metadata(state)
+            state["relevant_chunks"] = []
+            state["rejected_chunks"] = deduped
+            return state
 
-    # ── 4. Filter relevant chunks (OOC threshold) ─────────────
-    # Separate chunks into above-threshold (relevant) and below-threshold (rejected).
-    # Only relevant_chunks are sent to the LLM and shown as source citations.
-    relevant = filter_relevant_chunks(deduped)
-    rejected = [c for c in deduped if c.relevance_score < OOC_THRESHOLD]
+        relevant = filter_relevant_chunks(deduped)
+        rejected = [c for c in deduped if c.relevance_score < OOC_THRESHOLD]
+
     state["relevant_chunks"] = relevant
     state["rejected_chunks"] = rejected
 
-    # ── 5. Confidence scoring ──────────────────────────────────
+    # ── 4. Confidence scoring ──────────────────────────────────
     confidence = score_confidence(deduped)
     state["confidence"] = confidence
 
     cfg = get_settings()
-    # Bypass questions always require human review regardless of confidence
     if bypass:
         state["requires_human_review"] = True
     else:
@@ -324,6 +370,37 @@ def _node_govern(state: AgentState) -> AgentState:
         f"bypass={bypass} | review={state['requires_human_review']}"
     )
     return state
+
+
+def _apply_refusal_metadata(state: AgentState) -> None:
+    """
+    Set canonical refusal metadata on the state.
+
+    For ALL refusal reasons the answer must have:
+      topic     = GENERAL
+      owner     = Compliance Officer
+      risk      = LOW
+      escalated = False
+      confidence = 0.0
+
+    This function mutates state in-place and is called from both the
+    keyword-guard early-exit path (Layer 1) and the score-gate path (Layer 2).
+    """
+    state["routing"] = RoutingDecision(
+        topic=ComplianceTopic.GENERAL,
+        risk_level=RiskLevel.LOW,
+        owner=ComplianceOwner.COMPLIANCE_OFFICER,
+        reasoning="Refusal: question is outside the available compliance corpus.",
+    )
+    state["confidence"] = 0.0
+    state["escalated"] = False
+    state["requires_human_review"] = False
+    state["bypass_intent"] = state.get("bypass_intent", False)
+    # Ensure relevant/rejected are always populated for debug
+    if "relevant_chunks" not in state:
+        state["relevant_chunks"] = []
+    if "rejected_chunks" not in state:
+        state["rejected_chunks"] = state.get("chunks", [])
 
 
 def _node_answer(state: AgentState) -> AgentState:
@@ -403,11 +480,20 @@ def _node_escalate(state: AgentState) -> AgentState:
     """
     Determine whether the answer requires escalation.
 
+    Refused questions are NEVER escalated — they already carry the canonical
+    refusal metadata (risk=LOW, escalated=False) set by _apply_refusal_metadata.
+
     Bypass-intent questions are always escalated regardless of what
     should_escalate() returns.
 
     Populates escalation_reason for the debug panel.
     """
+    # Refused questions must not be escalated — the refusal is the final answer.
+    if state.get("refused", False):
+        state["escalated"] = False
+        state["escalation_reason"] = "No escalation — question was refused (out-of-corpus)."
+        return state
+
     routing: RoutingDecision = state.get("routing", RoutingDecision())
     question = state["question"]
     answer_text = state.get("answer_text", "")
@@ -470,6 +556,7 @@ def _node_output(state: AgentState) -> AgentState:
         "routing_reasoning": routing.reasoning,
         "risk_level": routing.risk_level,
         "ooc_threshold": OOC_THRESHOLD,
+        "keyword_refused": state.get("refusal_reason") == REASON_KEYWORD,
     }
 
     state["final_answer"] = ComplianceAnswer(
