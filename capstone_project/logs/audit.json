@@ -372,5 +372,343 @@
     "escalated": true,
     "refused": false,
     "session_id": ""
+  },
+  {
+    "id": "04e39167-b441-46a3-9138-c6b6f2d049eb",
+    "timestamp": "2026-07-15T22:18:44.674206+00:00",
+    "question": "can we store EU customer data in the US?",
+    "answer": "Storing EU customer data in the United States constitutes a transfer of personal data to a third country under the GDPR. Such a transfer is permissible only if one of the lawful bases set out in Article\u202f49 (or an adequacy decision or appropriate safeguards) is satisfied.\n\n**Key conditions from the GDPR excerpts:**\n\n- **Explicit consent** \u2013 the data subject must have explicitly consented to the transfer after being informed of the possible risks due to the absence of an adequacy decision and appropriate safeguards (Source\u202f1, p.\u202f63, point\u202f(a)).\n- **Necessary for a contract** \u2013 the transfer may be made if it is necessary for the performance of a contract between the data subject and the controller, or for pre\u2011contractual steps taken at the data subject\u2019s request (Source\u202f1, p.\u202f63, points\u202f(b) and\u202f(c)).\n- **Important reasons of public interest** \u2013 transfers may be allowed for important public\u2011interest reasons, either under Union or Member State law (Source\u202f1, p.\u202f63, point\u202f(d); Source\u202f2, p.\u202f20).\n- **Appropriate safeguards** \u2013 in the absence of an adequacy decision, transfers must comply with the GDPR\u2019s provisions on safeguards (e.g., Standard Contractual Clauses, Binding Corporate Rules) (Source\u202f3",
+    "sources": [
+      "GDPR_Regulation.pdf"
+    ],
+    "confidence": 0.663,
+    "topic": "GDPR",
+    "risk_level": "HIGH",
+    "owner": "Data Protection Officer (DPO)",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "05cb10f4-fabe-45ba-b7ea-b61d920d7477",
+    "timestamp": "2026-07-15T23:23:22.983824+00:00",
+    "question": "what password length is required?",
+    "answer": "The SANS Password Construction Standard (April\u202f2025) requires a minimum password length of **16 characters** for all work\u2011related passwords\u3010SANS_Password_Construction_Standard_April2025.pdf, Page\u202f0\u3011.",
+    "sources": [
+      "SANS_Password_Construction_Standard_April2025.pdf"
+    ],
+    "confidence": 0.5828,
+    "topic": "Security",
+    "risk_level": "LOW",
+    "owner": "Security Team",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "5bb535bd-00e4-4b74-871a-ec52ceae15ec",
+    "timestamp": "2026-07-15T23:23:49.144448+00:00",
+    "question": "what password rules are required?",
+    "answer": "The LLM is temporarily unavailable. Here are the most relevant policy excerpts:\n\n[SANS_Password_Construction_Standard_April2025.pdf, p.0]: Password Construction Standard (Last Updated April 2025) Purpose The purpose of this guidelines is to provide best practices for the creation of strong passwords.  Scope This guideline applies to employees, contractors, consultants, temporary and other workers, including all personnel affiliated with third parties. This guideline applies to all passwords including but not limited to user-level acc",
+    "sources": [
+      "SANS_Password_Construction_Standard_April2025.pdf"
+    ],
+    "confidence": 0.5828,
+    "topic": "Security",
+    "risk_level": "LOW",
+    "owner": "Security Team",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "16080ff0-2fb9-4477-9be6-a99368c78321",
+    "timestamp": "2026-07-15T23:28:33.531056+00:00",
+    "question": "what password length are required?",
+    "answer": "The LLM is temporarily unavailable. Here are the most relevant policy excerpts:\n\n[SANS_Password_Construction_Standard_April2025.pdf, p.0]: Password Construction Standard (Last Updated April 2025) Purpose The purpose of this guidelines is to provide best practices for the creation of strong passwords.  Scope This guideline applies to employees, contractors, consultants, temporary and other workers, including all personnel affiliated with third parties. This guideline applies to all passwords including but not limited to user-level acc",
+    "sources": [
+      "SANS_Password_Construction_Standard_April2025.pdf"
+    ],
+    "confidence": 0.5828,
+    "topic": "Security",
+    "risk_level": "LOW",
+    "owner": "Security Team",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "e1f28506-b100-4471-b2a0-eb483d8c5db2",
+    "timestamp": "2026-07-15T23:28:33.897109+00:00",
+    "question": "what password length are required?",
+    "answer": "The SANS Password Construction Standard (April\u202f2025) requires a **minimum of 16 characters** for all work\u2011related passwords. This applies to user\u2011level, system\u2011level, web, email, screen\u2011saver, voicemail, and local router logins for employees, contractors, consultants, temporary workers, and third\u2011party personnel.\u202f[Source: SANS_Password_Construction_Standard_April2025.pdf, Page\u202f0]",
+    "sources": [
+      "SANS_Password_Construction_Standard_April2025.pdf"
+    ],
+    "confidence": 0.5828,
+    "topic": "Security",
+    "risk_level": "LOW",
+    "owner": "Security Team",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "3d2c2ece-85ae-41fb-abdb-71f4b7fd730a",
+    "timestamp": "2026-07-15T23:33:13.682954+00:00",
+    "question": "what are the incident response steps for a data breach?",
+    "answer": "**Incident\u2011response steps for a personal\u2011data breach (based on the provided policy excerpts)**  \n\n1. **Detect & Initiate** \u2013 As soon as a breach is suspected, the controller should **initiate** the response process (CRF\u2011Governance\u2011Risk\u2011Model\u2011v2026.pdf, p.\u202f22: \u201cInitiate \u2026 the foundation of the organization\u2019s cybersecurity governance program\u201d).  \n\n2. **Inventory Affected Assets** \u2013 Identify and **inventory** the technology assets and personal data that have been impacted (CRF\u2011Governance\u2011Risk\u2011Model\u2011v2026.pdf, p.\u202f22: \u201cInventory the organization's technology assets \u2026\u201d).  \n\n3. **Assess Risk** \u2013 Evaluate whether the breach is likely to result in a **high risk to the rights and freedoms of natural persons**",
+    "sources": [
+      "GDPR_Regulation.pdf",
+      "CRF-Governance-Risk-Model-v2026.pdf"
+    ],
+    "confidence": 0.7127,
+    "topic": "Security",
+    "risk_level": "MEDIUM",
+    "owner": "Security Team",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "d00cd2ec-aabd-4450-a3b7-a50324741466",
+    "timestamp": "2026-07-15T23:36:59.527486+00:00",
+    "question": "what are the incident response steps for a data breach?",
+    "answer": "**Incident\u2011response steps for a personal\u2011data breach (based on the provided GDPR excerpts and the CRF governance model)**  \n\n1. **Detect and confirm the breach** \u2013 As soon as the controller becomes aware that a personal\u2011data breach has occurred, the incident must be logged and assessed (GDPR\u202fRegulation.pdf, p.\u202f16).  \n\n2. **Assess risk to rights and freedoms** \u2013 Determine whether the breach is likely to result in a *high risk* to the rights and freedoms of natural persons. This triggers the obligation to communicate the breach to the data",
+    "sources": [
+      "GDPR_Regulation.pdf",
+      "CRF-Governance-Risk-Model-v2026.pdf"
+    ],
+    "confidence": 0.7127,
+    "topic": "Security",
+    "risk_level": "MEDIUM",
+    "owner": "Security Team",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "77c472e8-04a1-46ba-85d1-91803385abae",
+    "timestamp": "2026-07-15T23:38:27.815753+00:00",
+    "question": "can we store EU Customer data in the US?",
+    "answer": "Storing EU\u2011resident personal data in the United\u202fStates constitutes a transfer of data to a \u201cthird country\u201d under the GDPR. Such a transfer is permissible only if one of the lawful bases set out in Articles\u202f44\u201149 of the Regulation is satisfied\u202f\u3010Source\u202f3, p.\u202f18\u3011.  \n\n**1. Adequacy decision** \u2013 The GDPR allows free flow when the European Commission has determined that the third country ensures an adequate level of protection. The United\u202fStates does **not** currently benefit from an adequacy decision, so this route is not available\u202f\u3010Source\u202f2, p.\u202f20\u3011.  \n\n**2. Appropriate safeguards** \u2013 In the absence of adequacy, a transfer may proceed if the controller or processor provides \u201cappropriate safeguards\u201d (e.g., Standard Contractual Clauses, Binding Corporate Rules, approved codes of conduct, or certification mechanisms) and ensures enforceable data\u2011subject rights and effective legal remedies\u202f\u3010Source\u202f1, p.\u202f63\u3011. Implementing SCCs or obtaining BCR approval is the most common way to lawfully store EU data in the US.  \n\n**3. Derogations for specific situations** \u2013 If safeguards are not in place, a transfer may still rely on a derogation, but only on a case\u2011by\u2011case basis and subject to strict necessity:  \n\n* explicit consent of the data subject after being informed of the risks\u202f\u3010Source\u202f1, p.\u202f63(a)\u3011;  \n* performance of a contract between the data",
+    "sources": [
+      "GDPR_Regulation.pdf"
+    ],
+    "confidence": 0.663,
+    "topic": "GDPR",
+    "risk_level": "HIGH",
+    "owner": "Data Protection Officer (DPO)",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "80774ff6-9aee-43c5-b508-6162ec2ac0c5",
+    "timestamp": "2026-07-15T23:46:11.968206+00:00",
+    "question": "Can we store EU customer personal data in our US cloud region?",
+    "answer": "The LLM is temporarily unavailable. Here are the most relevant policy excerpts:\n\n[GDPR_Regulation.pdf, p.18]: this Regulation. A transfer could tak e place only if, subject to the other pro visions of this Regulation, the \nconditions laid do wn in the pro visions of this Regulation relating to the transfer of personal data to third \ncountr ies or intern ational org anisations are compl ied with by the controller or processor . \n(102)  This Regulation is without prejudice to internati onal agreements concl\n\n[GDPR_Regulation.pdf, p.20]: including phy sical inte gr ity or life, if the data subject is incapable of giving consent. In the absence of an \nadequacy decision, U nion or Member State la w ma y , f or im por tant reasons of public interest, expressly set limits \nto the transfer of specific categor ies of data to a third countr y or an international org anisation. Member Stat es \nshould notify such pro visions to the Commiss\n\n[GDPR_Regulation.pdf, p.10]: by persons subject to a legal oblig ation of professional secrecy . U nion or Member State law should pro vide f or \nspecific and suitable measures so as to prote ct the fundamental r ights and the personal data of natural persons. \nMember State s should be allo wed to maintain or introduce fur ther conditions, including limitations, with rega rd \nto the processing of ge netic data, biometr ic dat",
+    "sources": [
+      "GDPR_Regulation.pdf"
+    ],
+    "confidence": 0.6532,
+    "topic": "GDPR",
+    "risk_level": "HIGH",
+    "owner": "Data Protection Officer (DPO)",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "4ef8e20e-f7b8-43c8-896b-ade002672c87",
+    "timestamp": "2026-07-15T23:47:30.269760+00:00",
+    "question": "what is the retention period for customer records?",
+    "answer": "The retention period for customer records depends on the regulatory framework that applies:\n\n- **FATF AML Guidelines** \u2013 Financial institutions are required to keep all necessary records on transactions (both domestic and international) **for at least five years** to enable swift compliance with information requests from competent authorities\u3010Source\u202f3: FATF_AML_Guidelines.pdf, Page\u202f15\u3011. This five\u2011year minimum is a baseline; institutions may retain records longer if justified by risk\u2011based considerations or other legal obligations.\n\n- **GDPR** \u2013 The regulation does not prescribe a fixed number of years. Instead, it imposes a **storage\u2011limitation principle**: personal data must be kept **no longer than is necessary** for the purposes for which they were processed\u3010Source\u202f5: GDPR_Regulation.pdf, Page\u202f35 (point\u202fe)\u3011. Controllers must establish appropriate time limits for erasure or periodic review and take reasonable steps to ensure inaccurate data are rectified or deleted\u3010Source\u202f2: GDPR_Regulation.pdf, Page\u202f6\u3011. If data are retained for archiving, scientific, historical, or statistical purposes, longer storage is permissible only with suitable safeguards\u3010Source\u202f5: GDPR_Regulation.pdf, Page\u202f35\u3011.\n\n**Practical guidance:**  \n1. Determine the legal basis and purpose for retaining each category of customer data.  \n2. Define a specific retention schedule that satisfies the purpose\u2011based necessity test under GDPR.  \n3. Ensure that, at a minimum, transaction records required by AML/FATF rules are kept for **five years**, and extend retention only if GDPR\u2011compatible justification exists (e.g., ongoing legal claims, archiving with safeguards).",
+    "sources": [
+      "GDPR_Regulation.pdf",
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6326,
+    "topic": "General Compliance",
+    "risk_level": "MEDIUM",
+    "owner": "Compliance Officer",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "20f76bf1-dae1-49cf-9b96-b050b0ba51ed",
+    "timestamp": "2026-07-15T23:50:59.431593+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "The LLM is temporarily unavailable. Here are the most relevant policy excerpts:\n\n[FATF_AML_Guidelines.pdf, p.80]: certain messaging standards such as ISO 20022. \n51  Recommendation 16 does not specify whether or how the information transmitted should be screened \nagainst sanction lists, given that various mechanisms may ensure compliance with applicable targeted \nfinancial sanctions.\n\n[FATF_AML_Guidelines.pdf, p.26]: requirements. Sanctions should be applicable not only to financial institutions and DNFBPs, but \nalso to their directors and senior management.\n\n[FATF_AML_Guidelines.pdf, p.35]: procedures to manage and mitigate effectively the risks that have been identified. This may be \ndone within the framework of their existing targeted financial sanctions and/or compliance  \nprogrammes. They should be required to monitor the implementation of those controls and to \nenhance them, if necessary. The policies, controls and procedures should be approved by senior",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "a8704353-a5ef-4d11-9ff0-7cedb5d7e21e",
+    "timestamp": "2026-07-15T23:51:01.650163+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "Before a new customer is onboarded, the institution must perform sanctions screening as part of its customer\u2011due\u2011diligence (CDD) process to ensure compliance with applicable targeted financial sanctions. The FATF AML Guidelines make clear that:\n\n* **Screening is a prerequisite for establishing the business relationship.**\u202fIf a financial institution cannot comply with the applicable requirements (including sanctions",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "93899be9-b725-4176-ba8b-103c5ad04565",
+    "timestamp": "2026-07-15T23:51:06.658138+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "Before a new customer is onboarded, the institution must perform sanctions screening as part of its customer\u2011due\u2011diligence (CDD) process to ensure compliance with applicable targeted financial sanctions. The FATF AML Guidelines make clear that:\n\n* **Screening is required** \u2013 the verification of the customer\u2019s identity (and beneficial owner) must be carried out \u201cas soon as reasonably practicable following the establishment of the relationship\u201d\u202f[Source\u202f4, p.\u202f15]. This verification step includes checking the customer against sanctions lists to confirm that the person or entity is not subject to a targeted financial sanction.  \n* **Risk\u2011based approach** \u2013 the extent and frequency of screening should be adjusted according to the money\u2011laundering and terrorist\u2011financing risks identified\u202f[Source\u202f3, p.\u202f35]. Institutions are expected to manage and mitigate those risks within their existing targeted\u2011financial\u2011sanctions or compliance programmes, monitoring the effectiveness of controls and enhancing them when necessary.  \n* **Mechanisms are not prescribed** \u2013 Recommendation\u202f16 does not dictate a specific method or format for screening; it notes that \u201cvarious mechanisms may ensure compliance with applicable targeted financial sanctions",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "5118567c-60b0-4034-9165-f8aa1d1b2e87",
+    "timestamp": "2026-07-16T00:03:39.299309+00:00",
+    "question": "what are customer due dilligence requirements?",
+    "answer": "Customer due\u2011diligence (CDD) requirements, as set out in the FATF AML Guidelines and reflected in the vendor policy, comprise the following core elements:\n\n1. **Identify and verify the customer** \u2013 Obtain reliable, independent source documents or data to confirm the identity of natural\u2011person customers and, for legal persons or arrangements, verify the entity\u2019s identity, understand its nature of business, and ascertain its ownership and control structure\u3010Source\u202f1: FATF_AML_Guidelines.pdf, p.\u202f66\u3011.\n\n2. **Verify persons acting on behalf of the customer** \u2013 When a third party purports to act for the customer, the institution must confirm that the person is duly authorised and must identify and verify that individual\u2019s identity\u3010Source\u202f1: FATF_AML_Guidelines.pdf, p.\u202f66\u3011.\n\n3. **Understand the purpose and intended nature of the business relationship** \u2013 This is part of the CDD measures under Recommendation\u202f10 and must be gathered for all customers\u3010Source\u202f5: FATF_AML_Guidelines.pdf, p.\u202f18\u3011.\n\n4. **Apply CDD to existing customers** \u2013 Institutions should conduct CDD on existing relationships based on materiality and risk, taking into account when CDD was last performed and the adequacy of previously obtained data\u3010Source\u202f4: FATF_AML_Guidelines.pdf, p.\u202f69\u3011.\n\n5. **Reliance on third parties for CDD** \u2013 If a financial institution relies on another entity to perform CDD, it must (a) immediately obtain the necessary information concerning the CDD elements (a)\u2013(c) of Recommendation\u202f10, and (b) ensure that copies of identification data and relevant documentation can be made available from the third party upon request without delay. The ultimate responsibility for CDD remains with the relying institution\u3010Source\u202f5: FATF_AML_Guidelines.pdf, p.\u202fp.\u202f18\u201118\u3011.\n\n6. **Vendor\u2011level expectations** \u2013 Vendors must adopt, maintain, and implement reasonable processes that prevent non\u2011compliant conduct, including ensuring that their agents, subcontractors, intermediaries, and workers meet the same regulatory\u2011compliance standards expected of the vendor itself\u3010Source\u202f3: vendor-policy.80281467.pdf, p.\u202f0",
+    "sources": [
+      "FATF_AML_Guidelines.pdf",
+      "vendor-policy.80281467.pdf"
+    ],
+    "confidence": 0.6566,
+    "topic": "AML",
+    "risk_level": "MEDIUM",
+    "owner": "AML Officer",
+    "escalated": false,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "b9beff14-42d5-4004-b4db-0f7a5a634d36",
+    "timestamp": "2026-07-16T04:12:09.231899+00:00",
+    "question": "tell me about ISO9000",
+    "answer": "This question is outside the available compliance corpus. I cannot provide a policy-based answer because the uploaded policy documents do not cover this topic. Please consult the appropriate Compliance Officer.",
+    "sources": [],
+    "confidence": 0.0,
+    "topic": "General Compliance",
+    "risk_level": "LOW",
+    "owner": "Compliance Officer",
+    "escalated": false,
+    "refused": true,
+    "session_id": ""
+  },
+  {
+    "id": "bbd21d8d-4c17-4fb5-a335-132be7657d0f",
+    "timestamp": "2026-07-16T04:30:32.995535+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "Before a new customer is onboarded, the institution must perform sanctions screening as part of its customer\u2011due\u2011diligence (CDD) process. The FATF AML Guidelines state that, while Recommendation\u202f16 does not prescribe a specific method for screening information against sanction lists, institutions are expected to employ appropriate mechanisms to ensure compliance with applicable targeted financial sanctions\u3010Source\u202f1: FATF_AML_Guidelines.pdf, p.\u202f80\u3011. This screening should be integrated into the verification of the customer\u2019s identity and beneficial owner, which must be completed as soon as reasonably practicable after the business relationship is established\u3010Source\u202f4: FATF_AML_Guidelines.pdf, p.\u202f15\u3011.  \n\nThe sanctions obligations apply not only to the financial institution or DNFBP but also to its directors and senior management, who must approve the policies, controls and procedures used for sanctions screening\u3010Source\u202f2:",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "0a4fd639-a5cc-432a-affb-8ea1e202b5b4",
+    "timestamp": "2026-07-16T04:30:34.322521+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "We need to answer: \"What sanctions screening is required before onboarding a new customer?\" Use context. The context includes FATF AML Guidelines excerpts. Let's parse.\n\nSource 1, page 80: mentions ISO 20022, Recommendation 16 does not specify whether or how the information transmitted should be screened against sanction lists, given that various mechanisms may ensure compliance with applicable targeted financial sanctions.\n\nSource 2, page 26: requirements. Sanctions should be applicable not only to financial institutions and DNFBPs, but also to their directors and senior management.\n\nSource 3, page 35: procedures to manage and mitigate effectively the risks that have been identified. This may be done within the framework of their existing targeted financial sanctions and/or compliance programmes. They should be required to monitor the implementation of those controls and to enhance them, if necessary. The policies, controls and procedures should be approved by senior.\n\nSource 4, page 15: verification as soon as reasonably practicable following the establishment of the relationship, where the money laundering and terrorist financing risks are effectively managed and where this is essential not to interrupt the normal conduct of business. Where the financial institution is unable to comply with the applicable requirements under paragraphs (a) to (d) above (subject to appropriate modification of the extent of the measures on a risk-based approach), it should be required not to open the account, commence business relations or perform the transaction; or should be required to terminate the business relationship; and should consider making a suspicious transactions report in relation to the customer.\n\nSource 5, page 73: Verifying the identity of the customer and the beneficial owner after the establishment of the business relationship (e.g. if account transactions rise above a defined monetary threshold). Reducing the frequency of customer identification updates. Reducing the degree of on-going monitoring and scrutinising transactions, based on a reasonable monetary threshold. Not collecting specific information or carrying out specific measures to understand the purpose and intended nature of the business relationship, but inferring the purpose and nature from the type of transactions or business relationship established. Simplified CDD measures are not acceptable whenever there is a suspicion of money laundering.\n\nWe need to answer: what sanctions screening is required before onboarding a new customer? The context says: Recommendation 16 does not specify whether or how the information transmitted should be screened against sanction lists, given that various mechanisms may ensure compliance with applicable targeted financial sanctions. So it's not prescriptive; but they must ensure compliance with targeted financial sanctions. Also, they must verify identity and beneficial owner after establishment (but before onboarding? Actually after establishment). They must have procedures to manage and mitigate risks, including targeted financial sanctions and compliance programmes, approved by senior management. They must not open account if unable to comply with requirements (including sanctions). So answer: before onboarding, institutions must conduct sanctions screening as part of their risk-based approach",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "2a3ff04f-88ac-4960-8f34-16fa00c6f40e",
+    "timestamp": "2026-07-16T04:30:43.920971+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "Before a new customer is onboarded, the institution must conduct sanctions screening as part of its customer\u2011due\u2011diligence (CDD) process. The FATF guidance makes clear that:\n\n* **Sanctions apply to the institution and its senior management** \u2013 directors and senior managers are also subject to targeted financial sanctions obligations (Source\u202f2, p.\u202f26).  \n* **Screening must be integrated into risk\u2011based CDD framework** \u2013 institutions must verify the identity of the customer and beneficial\u2011owner and customer information** \u2013 the verification of identity (and beneficial\u2011owner details) should be carried out \u201cas soon as reasonably practicable following the establishment of the relationship\u201d (Source\u202f4, p.\u202f15).  \n* **Risk\u2011",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "45e7d35d-9924-4f1f-82fe-33447a24086c",
+    "timestamp": "2026-07-16T04:30:59.580359+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "Before a new customer is onboarded, the FATF AML Guidelines require that the institution conduct sanctions screening as part of its customer\u2011due\u2011diligence (CDD) process and ensure that the screening is integrated into a risk\u2011based compliance programme that is approved by senior management.\n\n- **Screening obligation:** While Recommendation\u202f16 does not prescribe a specific method for screening information against sanction lists, it notes that \u201cvarious mechanisms may ensure compliance with applicable targeted financial sanctions\u201d\u3010FATF_AML_Guidelines.pdf, Page\u202f80\u3011. Institutions must therefore adopt a screening mechanism (e.g., automated list checks, manual review) that satisfies the applicable sanctions regimes.\n\n- **Scope of sanctions:** Sanctions apply not only to the financial institution or DNFBP but also to its directors and senior management\u3010FATF_AML_Guidelines.pdf, Page\u202f26\u3011, meaning that screening must cover the customer, beneficial owners, and any related parties that could implicate senior personnel.\n\n- **Risk\u2011based CDD and verification:** The institution should verify the identity of the customer and the beneficial owner as soon as reasonably practicable after the relationship is",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "2af6283e-21b0-4260-adc0-d547771cf60a",
+    "timestamp": "2026-07-16T04:31:01.903999+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "Before a new customer is onboarded, the institution must perform sanctions screening as part of its customer\u2011due\u2011diligence (CDD) and risk\u2011based compliance programme. The FATF AML Guidelines make clear that:\n\n* **Sanctions compliance is a core obligation** \u2013 sanctions apply not only to the financial institution itself but also to its directors and senior management\u202f\u3010Source\u202f2: FATF_AML_Guidelines.pdf, Page\u202f26\u3011.  \n* **Screening must be integrated into the risk\u2011based approach** \u2013 while Recommendation\u202f16 does not prescribe a single method for screening transaction information against sanction lists, it notes that \u201cvarious mechanisms may ensure compliance with applicable targeted financial sanctions\u201d\u202f\u3010Source\u202f1: FATF_AML_Guidelines.pdf, Page\u202f80\u3011. Institutions therefore need to adopt a mechanism (e.g., automated list\u2011checking, manual review, or ISO\u202f20022\u2011based messaging) that satisfies the sanction\u2011screening requirement.  \n* **Screening is tied to identity verification** \u2013 the verification of the customer\u2019s identity and beneficial owner should be completed \u201cas soon as reasonably practicable following the establishment of the relationship\u201d\u202f\u3010Source\u202f4: FATF_AML_Guidelines.pdf, Page\u202f15\u3011. This verification step must include checking the individual or entity against applicable sanctions lists.  \n* **Controls must be monitored and approved** \u2013 policies, controls and procedures for sanctions screening (as part of the broader targeted\u2011financial\u2011sanctions programme) should be approved by senior management and regularly monitored for effectiveness\u202f\u3010Source\u202f3: FATF_AML_Guidelines.pdf, Page\u202f35\u3011.  \n* **Failure to screen triggers remedial action** \u2013 if the institution cannot comply with the applicable sanctions\u2011screening requirements (after applying a risk\u2011based modification",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
+  },
+  {
+    "id": "39329d43-123e-4521-b8a2-842ffc2c1f59",
+    "timestamp": "2026-07-16T04:31:09.183139+00:00",
+    "question": "What sanctions screening is required before onboarding a new customer?",
+    "answer": "We need to answer:<unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk><unk>urp(LOGinistIRTponsoredspururp Witness EmployeeuniteWonder Tbabra EmployeeDowaviamensurpurp(blank TTarikaturp Employeeentrania Tburp Beneiborabraurpinibwealth/Viewwekurp MistWonder Dien(blankPrompt Logoennessativityurp(blankurp\u0627\u06cc\u0644TXominated Bp Mist Bp Employee Employeeurp Bpurpforth EmployeeExprwebkitTMWonderurp?\u2019 Exprurp Shelrav{{urpfwurpurprejaarikatponsored LTLogoLogoDoturp Viaibor EmployeeurpurpMediaDOTurpurp(LOGyw terrestilevWonderMCs Mist Bpurp Electricurp Tb(blank{{DOTiachIRTTFravWonderDGVia BXBVLocatorblankinib Employee(blankslashiachivu BX CG(blankPrompturpurp\u30eb\u30a4 Employee(blankurpansenizigg Mist(PlayerurpurpennessurpurpWonderBV Bp Mist Truthurpinhurp(blank BW alenturp Coachurpinhurpurputica Bpurp Employee(blankurp Coachurp StockinibBis Truth Dot Bp Misturp StockLogoennessppaurpBW/-/urpforth Coach+\"/Logo EmployeeurpativityLogouyenizurp\u0627\u0626\u0644Logourp(blankativityurp empt(blankativityurp Stock BpurpurpVia Bp BpLogofloat Bp VitalDXuye BpLogoDOT PCL(blankurpDOTurpurpftTP Employeeiborurp\u0627\u06cc\u0644urp Bpurpftimeurpurp{{\u043d\u043e\u0432\u043e BpTruth/initfwurpPromptDowShelluticaurpuyeurpBVinist Witness LMPPromptennessPointDowBVBVurphara/pullwebkit/-/DowteraplainWonderPushurpBVinisturpurpDow MisturpennesserbeabineTruthDowuticakord CG(LOGurpDOTinist Witnessurp Senderenness TTkut confineurp Sender EmployeeennessivuuyepexBW\u30eb\u30a4fwDOTztuurp Mist ShelWonder LouisblankinibiborinibBVurp Expr(LOGtmWonder(LOGDowurp Bp Employee Territorywanderwealthwebkiturp emptivuut-terBV Sten Bp DoturpTParikat/ViewDowurpurpurpushedurp emptblankTPDow Territoryvirt Downtowntm Employee(LOGwebkitativity Employeeurp StockBVRoutes Bpinibreja fief BpLogourpLAButet Mist Mist Doturpurpurpurp Wordsurpurp Lump lancTMurpurpbeiter(LOGinistwebkitativityurp{{urpPrompturpTTurpativ Via Bp Mist WitnessPWurp\u6d25urpinistmistinhurpurpffe Viaurp Shelfw StockDowTruth PullffeurpDow Tend Bp Misturpurp Wet",
+    "sources": [
+      "FATF_AML_Guidelines.pdf"
+    ],
+    "confidence": 0.6193,
+    "topic": "AML",
+    "risk_level": "HIGH",
+    "owner": "AML Officer",
+    "escalated": true,
+    "refused": false,
+    "session_id": ""
   }
 ]
